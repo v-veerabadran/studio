@@ -1,41 +1,74 @@
 {
   "entities": {
     "UserProfile": {
-      "title": "User Profile",
-      "description": "Represents a user's public and private profile information.",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
       "type": "object",
+      "description": "Represents a user's profile information.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "The unique identifier for the user, matching the Firebase Auth UID."
-        },
-        "name": {
-          "type": "string",
-          "description": "The user's display name."
+          "description": "Unique identifier for the UserProfile entity."
         },
         "email": {
           "type": "string",
-          "format": "email",
-          "description": "The user's primary email address."
+          "description": "User's email address.",
+          "format": "email"
         },
-        "photoURL": {
+        "firstName": {
           "type": "string",
-          "format": "uri",
-          "description": "URL for the user's profile picture."
+          "description": "User's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "User's last name."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of when the user profile was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of when the user profile was last updated.",
+          "format": "date-time"
         }
       },
-      "required": ["id", "email"]
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName",
+        "createdAt",
+        "updatedAt"
+      ]
     }
   },
   "auth": {
-    "providers": ["google", "github", "email", "facebook", "twitter", "phone"]
+    "providers": [
+      "password",
+      "anonymous"
+    ]
   },
   "firestore": {
-    "/users/{userId}": {
-      "schema": {
-        "$ref": "#/entities/UserProfile"
-      },
-      "description": "Stores individual user profile documents, where the document ID is the user's UID."
-    }
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. Secured via path-based ownership; only the authenticated user (userId) can read/write their profile. Includes standard user profile fields such as email, first name, last name, and timestamps. This enables straightforward security rules based on `request.auth.uid == userId`.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support user authentication and profile management while adhering to the principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). The structure prioritizes path-based ownership for user profiles, ensuring secure and scalable data access. By placing user profiles directly under `/users/{userId}`, we leverage Firebase's security rules to easily control access based on the authenticated user's ID. This design avoids the need for complex authorization logic or hierarchical dependencies, promoting atomic operations and simplified debugging. The structure segregates user profile data into a dedicated collection, which simplifies security rules by ensuring all documents within the collection share the same security requirements. This eliminates the risk of mixing data with different access needs and further enhances security."
   }
 }

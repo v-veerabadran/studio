@@ -5,6 +5,21 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Header from "@/components/header";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BarChart2, Settings, User } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 export default function DashboardLayout({
@@ -14,6 +29,7 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -23,7 +39,19 @@ export default function DashboardLayout({
 
   if (loading || !user) {
     return (
-        <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen">
+        <div className="hidden md:block w-64 border-r p-4 space-y-4">
+            <div className="flex items-center gap-2">
+                <Skeleton className="h-7 w-7" />
+                <Skeleton className="h-6 w-24" />
+            </div>
+            <div className="space-y-2 pt-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        </div>
+        <div className="flex-1">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-16 items-center">
                     <div className="mr-8 hidden md:flex">
@@ -45,13 +73,49 @@ export default function DashboardLayout({
                 </div>
             </main>
         </div>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-1">{children}</main>
-    </div>
+    <SidebarProvider>
+      <Sidebar variant="inset" collapsible="icon">
+        <SidebarContent>
+          <SidebarGroup>
+            <div className="p-2 pb-0">
+               <Logo />
+            </div>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Link href="/dashboard" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === "/dashboard"}
+                    tooltip="Dashboard"
+                  >
+                    <BarChart2 />
+                    <span>Dashboard</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                 <Link href="/account" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === "/account"}
+                    tooltip="My Account"
+                  >
+                    <User />
+                    <span>My Account</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <Header />
+        <main className="flex-1">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

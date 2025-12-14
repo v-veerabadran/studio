@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { doctorData, type Doctor } from '@/lib/data';
-import { HeartPulse, Lungs, Kidney, Star, Check, X, Medal } from 'lucide-react';
+import { HeartPulse, Lungs, Filter, Star, Check, X } from 'lucide-react';
 import Image from 'next/image';
 
 export default function DoctorsPage() {
@@ -82,7 +82,7 @@ export default function DoctorsPage() {
   const specialties = [
     { name: 'Cardiology', icon: HeartPulse, data: doctorData.cardiology },
     { name: 'Pulmonology', icon: Lungs, data: doctorData.pulmonology },
-    { name: 'Nephrology', icon: Kidney, data: doctorData.nephrology },
+    { name: 'Nephrology', icon: Filter, data: doctorData.nephrology },
   ];
 
   return (

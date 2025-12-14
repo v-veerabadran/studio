@@ -19,7 +19,7 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 import { hospitalData, type Hospital } from '@/lib/data';
-import { Building, HeartPulse, Lungs, Kidney, Star, Check, X } from 'lucide-react';
+import { Building, HeartPulse, Lungs, Filter, Star, Check, X } from 'lucide-react';
 import Image from 'next/image';
 
 export default function HospitalsPage() {
@@ -80,7 +80,7 @@ export default function HospitalsPage() {
   const specialties = [
     { name: 'Cardiology', icon: HeartPulse, data: hospitalData.cardiology },
     { name: 'Pulmonology', icon: Lungs, data: hospitalData.pulmonology },
-    { name: 'Nephrology', icon: Kidney, data: hospitalData.nephrology },
+    { name: 'Nephrology', icon: Filter, data: hospitalData.nephrology },
   ];
 
   return (

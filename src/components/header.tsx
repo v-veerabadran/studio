@@ -1,31 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/user-nav";
 import { useUser } from "@/firebase";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
 import { History } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Header() {
   const { user } = useUser();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center">
-          <div className="md:hidden">
-            <SidebarTrigger />
-          </div>
-          <div className="mr-8 hidden md:flex">
-            {/* Logo can be shown here on desktop if not in an inset sidebar */}
-          </div>
+      <div className="container flex h-16 items-center">
+        <div className="md:hidden">
+          <SidebarTrigger />
         </div>
-        
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-1 items-center justify-end space-x-4">
           {user ? (
             <>
               <TooltipProvider>

@@ -89,6 +89,23 @@ const SidebarProvider = React.forwardRef<
       [setOpenProp, open]
     )
 
+    // Auto-collapse logic
+    React.useEffect(() => {
+      let timer: NodeJS.Timeout;
+      // Only run on desktop when the sidebar is expanded
+      if (open && !isMobile) {
+        timer = setTimeout(() => {
+          setOpen(false);
+        }, 5000);
+      }
+      // Cleanup function to clear the timeout if the component unmounts,
+      // or if the sidebar is collapsed manually before the timeout.
+      return () => {
+        clearTimeout(timer);
+      };
+    }, [open, isMobile, setOpen]);
+
+
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
       return isMobile

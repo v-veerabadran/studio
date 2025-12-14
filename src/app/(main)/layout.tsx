@@ -17,7 +17,16 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, User, Calendar, FileText, MessageSquare, Pill } from 'lucide-react';
+import {
+  BarChart2,
+  User,
+  Calendar,
+  FileText,
+  MessageSquare,
+  Pill,
+  Hospital,
+  Users,
+} from 'lucide-react';
 import { Logo } from '@/components/logo';
 
 export default function MainLayout({
@@ -96,7 +105,7 @@ export default function MainLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-               <SidebarMenuItem>
+              <SidebarMenuItem>
                 <Link href="/appointments" passHref>
                   <SidebarMenuButton
                     isActive={pathname === '/appointments'}
@@ -107,7 +116,7 @@ export default function MainLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-               <SidebarMenuItem>
+              <SidebarMenuItem>
                 <Link href="/records" passHref>
                   <SidebarMenuButton
                     isActive={pathname === '/records'}
@@ -118,7 +127,7 @@ export default function MainLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-               <SidebarMenuItem>
+              <SidebarMenuItem>
                 <Link href="/messages" passHref>
                   <SidebarMenuButton
                     isActive={pathname === '/messages'}
@@ -129,7 +138,7 @@ export default function MainLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-               <SidebarMenuItem>
+              <SidebarMenuItem>
                 <Link href="/prescriptions" passHref>
                   <SidebarMenuButton
                     isActive={pathname === '/prescriptions'}
@@ -137,6 +146,28 @@ export default function MainLayout({
                   >
                     <Pill />
                     <span>Prescriptions</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/hospitals" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/hospitals'}
+                    tooltip="Hospitals"
+                  >
+                    <Hospital />
+                    <span>Hospitals</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/doctors" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/doctors'}
+                    tooltip="Doctors"
+                  >
+                    <Users />
+                    <span>Doctors</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
@@ -162,5 +193,3 @@ export default function MainLayout({
     </SidebarProvider>
   );
 }
-
-    

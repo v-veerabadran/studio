@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/firebase";
 import { updateUserProfile } from "@/lib/firebase/auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Upload, FileText, BadgeCheck, BadgeAlert } from "lucide-react";
+import { Loader2, Upload, FileText, BadgeCheck, BadgeAlert, History } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -139,10 +139,11 @@ export default function AccountPage() {
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">My Account</h1>
       <Tabs defaultValue="profile" className="max-w-3xl mx-auto">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="contact">Contact Info</TabsTrigger>
           <TabsTrigger value="documents">My Documents</TabsTrigger>
+          <TabsTrigger value="history">Search History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="profile">
@@ -274,6 +275,21 @@ export default function AccountPage() {
                     <FileText className="h-12 w-12 text-muted-foreground" />
                     <p className="mt-4 text-muted-foreground">You haven't uploaded any documents yet.</p>
                     <Button variant="link" className="mt-2">Upload a document</Button>
+                </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <Card>
+            <CardHeader>
+              <CardTitle>Search History</CardTitle>
+              <CardDescription>View your past searches.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
+                    <History className="h-12 w-12 text-muted-foreground" />
+                    <p className="mt-4 text-muted-foreground">You have no search history yet.</p>
                 </div>
             </CardContent>
           </Card>

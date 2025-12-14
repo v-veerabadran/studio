@@ -6,6 +6,9 @@ import { UserNav } from "@/components/user-nav";
 import { useUser } from "@/firebase";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
+import { History } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 export default function Header() {
   const { user } = useUser();
@@ -22,7 +25,24 @@ export default function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-4">
           {user ? (
-            <UserNav />
+            <>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button asChild variant="ghost" size="icon">
+                      <Link href="/account#history">
+                        <History />
+                        <span className="sr-only">Search History</span>
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Search History</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <UserNav />
+            </>
           ) : (
             <>
               <Button asChild variant="ghost">

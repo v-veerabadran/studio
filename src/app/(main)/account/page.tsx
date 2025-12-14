@@ -304,7 +304,6 @@ export default function AccountPage() {
           <Card>
             <CardHeader>
               <CardTitle>Search History</CardTitle>
-              <CardDescription>A log of your past search queries.</CardDescription>
             </CardHeader>
             <CardContent>
                 {searchHistory.length > 0 ? (
@@ -315,7 +314,7 @@ export default function AccountPage() {
                                     <Search className="h-4 w-4 text-muted-foreground mt-1" />
                                     <div className="flex-1">
                                         <p className="text-sm">{item.query}</p>
-                                        <p className="text-xs text-muted-foreground">{item.time}</p>
+                                        <p className="text-xs">{item.time}</p>
                                     </div>
                                 </div>
                                 {index < searchHistory.length - 1 && <Separator className="mt-4" />}

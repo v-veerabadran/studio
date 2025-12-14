@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, User, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { BarChart2, User, PanelLeftClose, PanelLeftOpen, Calendar, FileText, MessageSquare, Pill } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -108,6 +108,50 @@ export default function MainLayout({
                   >
                     <BarChart2 />
                     <span>Dashboard</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <Link href="/appointments" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/appointments'}
+                    tooltip="Appointments"
+                  >
+                    <Calendar />
+                    <span>Appointments</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <Link href="/records" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/records'}
+                    tooltip="Medical Records"
+                  >
+                    <FileText />
+                    <span>Medical Records</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <Link href="/messages" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/messages'}
+                    tooltip="Messages"
+                  >
+                    <MessageSquare />
+                    <span>Messages</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <Link href="/prescriptions" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/prescriptions'}
+                    tooltip="Prescriptions"
+                  >
+                    <Pill />
+                    <span>Prescriptions</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

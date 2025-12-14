@@ -3,9 +3,10 @@
 
 import { useUser } from "@/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, FileText, MessageSquare, Pill, Hospital, Stethoscope, MapPin } from "lucide-react";
+import { Calendar, FileText, MessageSquare, Pill, Stethoscope, MapPin } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const upcomingAppointments = [
   {
@@ -65,58 +66,66 @@ export default function DashboardPage() {
           Here's a summary of your health dashboard. Stay healthy!
         </p>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Upcoming Appointments
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{upcomingAppointments.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Check your schedule
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Medical Records
-            </CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">View</div>
-            <p className="text-xs text-muted-foreground">
-              Access your complete history
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Messages</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3 Unread</div>
-            <p className="text-xs text-muted-foreground">
-              From your care team
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Prescriptions</CardTitle>
-            <Pill className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2 Active</div>
-            <p className="text-xs text-muted-foreground">
-              Ready for refill
-            </p>
-          </CardContent>
-        </Card>
+        <Link href="/appointments">
+          <Card className="hover:bg-accent hover:cursor-pointer transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Upcoming Appointments
+              </CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{upcomingAppointments.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Check your schedule
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/records">
+          <Card className="hover:bg-accent hover:cursor-pointer transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Medical Records
+              </CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">View</div>
+              <p className="text-xs text-muted-foreground">
+                Access your complete history
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/messages">
+          <Card className="hover:bg-accent hover:cursor-pointer transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Messages</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">3 Unread</div>
+              <p className="text-xs text-muted-foreground">
+                From your care team
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/prescriptions">
+          <Card className="hover:bg-accent hover:cursor-pointer transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Prescriptions</CardTitle>
+              <Pill className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">2 Active</div>
+              <p className="text-xs text-muted-foreground">
+                Ready for refill
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <div className="lg:col-span-2">
@@ -167,7 +176,7 @@ export default function DashboardPage() {
                 {healthOffers.map(offer => (
                     <Card key={offer.id} className="overflow-hidden">
                        <div className="relative h-40 w-full">
-                         <Image src={offer.imageUrl} alt={offer.title} layout="fill" objectFit="cover" data-ai-hint={offer.imageHint} />
+                         <Image src={offer.imageUrl} alt={offer.title} fill objectFit="cover" data-ai-hint={offer.imageHint} />
                        </div>
                        <CardHeader>
                             <CardTitle>{offer.title}</CardTitle>

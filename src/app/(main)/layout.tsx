@@ -92,7 +92,7 @@ export default function MainLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex h-screen w-full">
         <Sidebar>
           <SidebarHeader>
             <Logo />
@@ -125,7 +125,7 @@ export default function MainLayout({
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col overflow-hidden">
           <Header />
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>

@@ -6,7 +6,7 @@ import * as z from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Github, Landmark, Twitter, Instagram, Facebook, Smartphone } from "lucide-react";
+import { Landmark, Twitter, Instagram, Facebook, Smartphone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import { signInWithEmail } from "@/lib/firebase/auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -116,32 +117,60 @@ export default function LoginPage() {
               <Separator />
               <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">OR</p>
             </div>
-            <div className="w-full grid grid-cols-2 gap-2">
-              <Button variant="outline" onClick={() => handleSocialLogin('Google')}>
-                <Landmark className="mr-2 h-4 w-4" />
-                Google
-              </Button>
-              <Button variant="outline" onClick={() => handleSocialLogin('GitHub')}>
-                <Github className="mr-2 h-4 w-4" />
-                GitHub
-              </Button>
-              <Button variant="outline" onClick={() => handleSocialLogin('Facebook')}>
-                <Facebook className="mr-2 h-4 w-4" />
-                Facebook
-              </Button>
-              <Button variant="outline" onClick={() => handleSocialLogin('Twitter')}>
-                <Twitter className="mr-2 h-4 w-4" />
-                Twitter
-              </Button>
-              <Button variant="outline" onClick={() => handleSocialLogin('Instagram')}>
-                <Instagram className="mr-2 h-4 w-4" />
-                Instagram
-              </Button>
-               <Button variant="outline" onClick={() => handleSocialLogin('Mobile')}>
-                <Smartphone className="mr-2 h-4 w-4" />
-                Mobile
-              </Button>
-            </div>
+            <TooltipProvider>
+              <div className="w-full flex justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={() => handleSocialLogin('Google')}>
+                      <Landmark className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign in with Google</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={() => handleSocialLogin('Facebook')}>
+                      <Facebook className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign in with Facebook</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={() => handleSocialLogin('Twitter')}>
+                      <Twitter className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign in with Twitter</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={() => handleSocialLogin('Instagram')}>
+                      <Instagram className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign in with Instagram</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={() => handleSocialLogin('Mobile')}>
+                      <Smartphone className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign in with Mobile</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
               <Link href="/signup" className="font-medium text-primary hover:underline">

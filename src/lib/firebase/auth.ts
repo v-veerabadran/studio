@@ -7,10 +7,6 @@ import {
   signOut,
   updateProfile,
   type User,
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  TwitterAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./client";
 
@@ -31,22 +27,6 @@ export const signUpWithEmail = async (
 export const signInWithEmail = (email: string, password: string) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
-
-const getProvider = (provider: 'google' | 'facebook' | 'twitter') => {
-    switch (provider) {
-        case 'google':
-            return new GoogleAuthProvider();
-        case 'facebook':
-            return new FacebookAuthProvider();
-        case 'twitter':
-            return new TwitterAuthProvider();
-    }
-}
-
-export const signInWithProvider = (provider: 'google' | 'facebook' | 'twitter') => {
-    const authProvider = getProvider(provider);
-    return signInWithPopup(auth, authProvider);
-}
 
 export const signOutUser = () => {
   return signOut(auth);

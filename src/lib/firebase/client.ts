@@ -1,13 +1,15 @@
+"use client";
+
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  "projectId": "studio-4609773787-4259f",
+  "appId": "1:68529439164:web:441be4b21f72751abfebb9",
+  "apiKey": "AIzaSyBDX2FAIkLjOV0_rcKKRGdEi2S05W_3y7A",
+  "authDomain": "studio-4609773787-4259f.firebaseapp.com",
+  "measurementId": "",
+  "messagingSenderId": "68529439164"
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

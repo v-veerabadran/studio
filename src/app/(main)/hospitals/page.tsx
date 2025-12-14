@@ -19,8 +19,9 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 import { hospitalData, type Hospital } from '@/lib/data';
-import { Building, HeartPulse, Wind, Filter, Star, Check, X } from 'lucide-react';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown } from 'lucide-react';
 import Image from 'next/image';
+import { Separator } from '@/components/ui/separator';
 
 export default function HospitalsPage() {
   const [selected, setSelected] = useState<Hospital[]>([]);
@@ -45,7 +46,7 @@ export default function HospitalsPage() {
           <SheetTitle>Compare Hospitals</SheetTitle>
           <SheetDescription>Side-by-side comparison of your selected hospitals.</SheetDescription>
         </SheetHeader>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 overflow-y-auto h-full">
             {selected.map(hospital => (
                 <Card key={hospital.id}>
                     <CardHeader>
@@ -55,19 +56,32 @@ export default function HospitalsPage() {
                         <CardTitle>{hospital.name}</CardTitle>
                         <CardDescription>{hospital.location}</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-2">
+                    <CardContent className="space-y-4">
                         <div className="flex items-center">
                             {[...Array(5)].map((_, i) => (
                                 <Star key={i} className={`h-5 w-5 ${i < hospital.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
                             ))}
                             <span className="ml-2 text-sm text-muted-foreground">({hospital.rating.toFixed(1)})</span>
                         </div>
-                         <div className="text-sm">
+                         <div className="text-sm space-y-1">
                             <p><strong>Specialty:</strong> {hospital.specialty}</p>
                             <p className="flex items-center">
                                 <strong>Emergency Services:</strong> 
                                 {hospital.emergency ? <Check className="h-4 w-4 ml-2 text-green-600" /> : <X className="h-4 w-4 ml-2 text-red-600" />}
                             </p>
+                        </div>
+                        <Separator />
+                        <div>
+                            <h4 className="font-semibold mb-2 flex items-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                                {hospital.pros.map((pro, index) => <li key={index}>{pro}</li>)}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-2 flex items-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                                {hospital.cons.map((con, index) => <li key={index}>{con}</li>)}
+                            </ul>
                         </div>
                     </CardContent>
                 </Card>

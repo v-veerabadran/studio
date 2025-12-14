@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { doctorData, type Doctor } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X } from 'lucide-react';
-import Image from 'next/image';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function DoctorsPage() {
   const [selected, setSelected] = useState<Doctor[]>([]);
@@ -46,7 +46,7 @@ export default function DoctorsPage() {
           <SheetTitle>Compare Doctors</SheetTitle>
           <SheetDescription>Side-by-side comparison of your selected doctors.</SheetDescription>
         </SheetHeader>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 overflow-y-auto h-full">
             {selected.map(doctor => (
                 <Card key={doctor.id}>
                     <CardHeader className="items-center">
@@ -57,19 +57,32 @@ export default function DoctorsPage() {
                         <CardTitle>{doctor.name}</CardTitle>
                         <CardDescription>{doctor.specialty}</CardDescription>
                     </CardHeader>
-                    <CardContent className="text-center space-y-2">
+                    <CardContent className="text-center space-y-4">
                          <div className="flex items-center justify-center">
                             {[...Array(5)].map((_, i) => (
                                 <Star key={i} className={`h-5 w-5 ${i < doctor.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
                             ))}
                             <span className="ml-2 text-sm text-muted-foreground">({doctor.rating.toFixed(1)})</span>
                         </div>
-                        <div className="text-sm">
+                        <div className="text-sm space-y-1">
                             <p><strong>Experience:</strong> {doctor.experience} years</p>
                             <p className="flex items-center justify-center">
                                 <strong>Board Certified:</strong> 
                                 {doctor.boardCertified ? <Check className="h-4 w-4 ml-2 text-green-600" /> : <X className="h-4 w-4 ml-2 text-red-600" />}
                             </p>
+                        </div>
+                        <Separator />
+                        <div>
+                            <h4 className="font-semibold mb-2 flex items-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 text-left">
+                                {doctor.pros.map((pro, index) => <li key={index}>{pro}</li>)}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-2 flex items-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 text-left">
+                                {doctor.cons.map((con, index) => <li key={index}>{con}</li>)}
+                            </ul>
                         </div>
                     </CardContent>
                 </Card>

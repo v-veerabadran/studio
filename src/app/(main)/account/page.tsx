@@ -159,10 +159,9 @@ export default function AccountPage() {
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">My Account</h1>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-3xl mx-auto">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="contact">Contact Info</TabsTrigger>
-          <TabsTrigger value="documents">My Documents</TabsTrigger>
           <TabsTrigger value="history">Search History</TabsTrigger>
         </TabsList>
         
@@ -282,22 +281,6 @@ export default function AccountPage() {
                     </form>
                 </Form>
             </Card>
-        </TabsContent>
-
-        <TabsContent value="documents">
-          <Card>
-            <CardHeader>
-              <CardTitle>My Documents</CardTitle>
-              <CardDescription>View and manage your uploaded documents.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
-                    <FileText className="h-12 w-12 text-muted-foreground" />
-                    <p className="mt-4 text-muted-foreground">You haven't uploaded any documents yet.</p>
-                    <Button variant="link" className="mt-2">Upload a document</Button>
-                </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         <TabsContent value="history">

@@ -6,6 +6,7 @@ import * as z from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Github, Landmark } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -63,6 +64,13 @@ export default function SignUpPage() {
       setIsLoading(false);
     }
   }
+
+  const handleSocialLogin = (provider: string) => {
+    toast({
+      title: "Coming Soon!",
+      description: `${provider} login is not yet available.`,
+    });
+  };
 
   return (
     <Card>
@@ -122,9 +130,16 @@ export default function SignUpPage() {
               <Separator />
               <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">OR</p>
             </div>
-            <Button variant="outline" className="w-full" disabled>
-                Social Login Coming Soon
-            </Button>
+            <div className="w-full grid grid-cols-2 gap-2">
+              <Button variant="outline" onClick={() => handleSocialLogin('Google')}>
+                <Landmark className="mr-2 h-4 w-4" />
+                Google
+              </Button>
+              <Button variant="outline" onClick={() => handleSocialLogin('GitHub')}>
+                <Github className="mr-2 h-4 w-4" />
+                GitHub
+              </Button>
+            </div>
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link href="/login" className="font-medium text-primary hover:underline">

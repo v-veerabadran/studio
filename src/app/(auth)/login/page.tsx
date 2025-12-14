@@ -6,7 +6,7 @@ import * as z from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Github, Landmark } from "lucide-react";
+import { Github, Landmark, Twitter, Instagram, Facebook, Smartphone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -124,6 +124,22 @@ export default function LoginPage() {
               <Button variant="outline" onClick={() => handleSocialLogin('GitHub')}>
                 <Github className="mr-2 h-4 w-4" />
                 GitHub
+              </Button>
+              <Button variant="outline" onClick={() => handleSocialLogin('Facebook')}>
+                <Facebook className="mr-2 h-4 w-4" />
+                Facebook
+              </Button>
+              <Button variant="outline" onClick={() => handleSocialLogin('Twitter')}>
+                <Twitter className="mr-2 h-4 w-4" />
+                Twitter
+              </Button>
+              <Button variant="outline" onClick={() => handleSocialLogin('Instagram')}>
+                <Instagram className="mr-2 h-4 w-4" />
+                Instagram
+              </Button>
+               <Button variant="outline" onClick={() => handleSocialLogin('Mobile')}>
+                <Smartphone className="mr-2 h-4 w-4" />
+                Mobile
               </Button>
             </div>
             <p className="text-center text-sm text-muted-foreground">

@@ -12,28 +12,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, User, PanelLeftClose, PanelLeftOpen, Calendar, FileText, MessageSquare, Pill } from 'lucide-react';
+import { BarChart2, User, Calendar, FileText, MessageSquare, Pill } from 'lucide-react';
 import { Logo } from '@/components/logo';
-import { useSidebar } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-
-function ToggleSidebarButton() {
-  const { state, toggleSidebar } = useSidebar();
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleSidebar}
-      className="hidden md:flex"
-    >
-      {state === 'expanded' ? <PanelLeftClose /> : <PanelLeftOpen />}
-    </Button>
-  );
-}
 
 export default function MainLayout({
   children,
@@ -96,7 +81,7 @@ export default function MainLayout({
         <Sidebar>
           <SidebarHeader>
             <Logo />
-            <ToggleSidebarButton />
+            <SidebarTrigger className="hidden md:flex" />
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
@@ -177,3 +162,5 @@ export default function MainLayout({
     </SidebarProvider>
   );
 }
+
+    

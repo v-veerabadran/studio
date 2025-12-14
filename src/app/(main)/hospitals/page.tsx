@@ -19,15 +19,17 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 import { hospitalData, type Hospital } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 
 export default function HospitalsPage() {
   const [selected, setSelected] = useState<Hospital[]>([]);
   const [isComparing, setIsComparing] = useState(false);
+  const [viewingHospital, setViewingHospital] = useState<Hospital | null>(null);
 
-  const handleSelect = (item: Hospital) => {
+  const handleSelect = (e: React.MouseEvent, item: Hospital) => {
+    e.stopPropagation();
     setSelected((prev) => {
       if (prev.find((i) => i.id === item.id)) {
         return prev.filter((i) => i.id !== item.id);
@@ -73,13 +75,13 @@ export default function HospitalsPage() {
                         <Separator />
                         <div>
                             <h4 className="font-semibold mb-2 flex items-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
-                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 text-left">
                                 {hospital.pros.map((pro, index) => <li key={index}>{pro}</li>)}
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-semibold mb-2 flex items-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
-                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 text-left">
                                 {hospital.cons.map((con, index) => <li key={index}>{con}</li>)}
                             </ul>
                         </div>
@@ -90,6 +92,55 @@ export default function HospitalsPage() {
       </SheetContent>
     </Sheet>
   )
+
+  const HospitalDetailSheet = ({ hospital, onOpenChange }: { hospital: Hospital | null, onOpenChange: (open: boolean) => void }) => {
+    if (!hospital) return null;
+    return (
+        <Sheet open={!!hospital} onOpenChange={onOpenChange}>
+            <SheetContent className="w-full sm:max-w-lg">
+                <SheetHeader>
+                    <div className="relative h-48 w-full mb-4 rounded-lg overflow-hidden">
+                        <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint}/>
+                    </div>
+                    <SheetTitle className="text-2xl">{hospital.name}</SheetTitle>
+                    <SheetDescription>{hospital.location}</SheetDescription>
+                </SheetHeader>
+                <div className="py-6 space-y-4">
+                     <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`h-5 w-5 ${i < hospital.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                        <span className="ml-2 text-sm text-muted-foreground">({hospital.rating.toFixed(1)})</span>
+                    </div>
+                     <div className="text-sm space-y-2">
+                        <p><strong>Primary Specialty:</strong> {hospital.specialty}</p>
+                        <p className="flex items-center">
+                            <strong>24/7 Emergency Services:</strong> 
+                            {hospital.emergency ? <Check className="h-4 w-4 ml-2 text-green-600" /> : <X className="h-4 w-4 ml-2 text-red-600" />}
+                        </p>
+                    </div>
+                    <Separator />
+                     <div>
+                        <h4 className="font-semibold mb-2 flex items-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            {hospital.pros.map((pro, index) => <li key={index}>{pro}</li>)}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold mb-2 flex items-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            {hospital.cons.map((con, index) => <li key={index}>{con}</li>)}
+                        </ul>
+                    </div>
+                    <Button className="w-full mt-4">
+                        <LocateFixed className="mr-2 h-4 w-4"/>
+                        Get Directions
+                    </Button>
+                </div>
+            </SheetContent>
+        </Sheet>
+    )
+  }
 
   const specialties = [
     { name: 'Cardiology', icon: HeartPulse, data: hospitalData.cardiology },
@@ -116,25 +167,29 @@ export default function HospitalsPage() {
           <TabsContent key={spec.name} value={spec.name}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {spec.data.map((hospital) => (
-                <Card key={hospital.id}>
-                  <CardHeader>
-                     <div className="relative h-40 w-full mb-4 rounded-t-lg overflow-hidden">
-                        <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint}/>
-                    </div>
-                    <CardTitle>{hospital.name}</CardTitle>
-                    <CardDescription>{hospital.location}</CardDescription>
-                  </CardHeader>
+                <Card key={hospital.id} className="flex flex-col">
+                  <div className="flex-grow cursor-pointer" onClick={() => setViewingHospital(hospital)}>
+                    <CardHeader>
+                       <div className="relative h-40 w-full mb-4 rounded-t-lg overflow-hidden">
+                          <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint}/>
+                      </div>
+                      <CardTitle>{hospital.name}</CardTitle>
+                      <CardDescription>{hospital.location}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`h-5 w-5 ${i < hospital.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                        <span className="ml-2 text-sm text-muted-foreground">({hospital.rating.toFixed(1)})</span>
+                      </div>
+                    </CardContent>
+                  </div>
                   <CardContent>
-                    <div className="flex items-center mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-5 w-5 ${i < hospital.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                      ))}
-                      <span className="ml-2 text-sm text-muted-foreground">({hospital.rating.toFixed(1)})</span>
-                    </div>
                     <Button
                       className="w-full"
                       variant={selected.find(s => s.id === hospital.id) ? 'default' : 'outline'}
-                      onClick={() => handleSelect(hospital)}
+                      onClick={(e) => handleSelect(e, hospital)}
                       disabled={!selected.find(s => s.id === hospital.id) && selected.length >= 3}
                     >
                       {selected.find(s => s.id === hospital.id) ? 'Selected' : 'Compare'}
@@ -163,6 +218,7 @@ export default function HospitalsPage() {
         </div>
       )}
       <ComparisonSheet />
+      <HospitalDetailSheet hospital={viewingHospital} onOpenChange={(open) => !open && setViewingHospital(null)} />
     </div>
   );
 }

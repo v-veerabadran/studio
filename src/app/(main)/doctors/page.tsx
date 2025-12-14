@@ -20,14 +20,16 @@ import {
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { doctorData, type Doctor } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, BookOpen } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export default function DoctorsPage() {
   const [selected, setSelected] = useState<Doctor[]>([]);
   const [isComparing, setIsComparing] = useState(false);
+  const [viewingDoctor, setViewingDoctor] = useState<Doctor | null>(null);
 
-  const handleSelect = (item: Doctor) => {
+  const handleSelect = (e: React.MouseEvent, item: Doctor) => {
+    e.stopPropagation(); // Prevent card click from firing
     setSelected((prev) => {
       if (prev.find((i) => i.id === item.id)) {
         return prev.filter((i) => i.id !== item.id);
@@ -73,13 +75,13 @@ export default function DoctorsPage() {
                         </div>
                         <Separator />
                         <div>
-                            <h4 className="font-semibold mb-2 flex items-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
+                            <h4 className="font-semibold mb-2 flex items-center justify-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
                             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 text-left">
                                 {doctor.pros.map((pro, index) => <li key={index}>{pro}</li>)}
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-semibold mb-2 flex items-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
+                            <h4 className="font-semibold mb-2 flex items-center justify-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
                             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 text-left">
                                 {doctor.cons.map((con, index) => <li key={index}>{con}</li>)}
                             </ul>
@@ -91,6 +93,56 @@ export default function DoctorsPage() {
       </SheetContent>
     </Sheet>
   )
+
+  const DoctorDetailSheet = ({ doctor, onOpenChange }: { doctor: Doctor | null, onOpenChange: (open: boolean) => void }) => {
+    if (!doctor) return null;
+    return (
+        <Sheet open={!!doctor} onOpenChange={onOpenChange}>
+            <SheetContent className="w-full sm:max-w-md">
+                <SheetHeader>
+                    <Avatar className="h-24 w-24 mb-4">
+                        <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
+                        <AvatarFallback>{doctor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    </Avatar>
+                    <SheetTitle className="text-2xl">{doctor.name}</SheetTitle>
+                    <SheetDescription>{doctor.specialty} at {doctor.hospital}</SheetDescription>
+                </SheetHeader>
+                <div className="py-6 space-y-4">
+                     <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`h-5 w-5 ${i < doctor.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                        <span className="ml-2 text-sm text-muted-foreground">({doctor.rating.toFixed(1)})</span>
+                    </div>
+                    <div className="text-sm space-y-2">
+                        <p><strong>Experience:</strong> {doctor.experience} years</p>
+                        <p className="flex items-center">
+                            <strong>Board Certified:</strong> 
+                            {doctor.boardCertified ? <Check className="h-4 w-4 ml-2 text-green-600" /> : <X className="h-4 w-4 ml-2 text-red-600" />}
+                        </p>
+                    </div>
+                    <Separator />
+                     <div>
+                        <h4 className="font-semibold mb-2 flex items-center"><ThumbsUp className="h-4 w-4 mr-2 text-green-600" /> Pros</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            {doctor.pros.map((pro, index) => <li key={index}>{pro}</li>)}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold mb-2 flex items-center"><ThumbsDown className="h-4 w-4 mr-2 text-red-600" /> Cons</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                            {doctor.cons.map((con, index) => <li key={index}>{con}</li>)}
+                        </ul>
+                    </div>
+                    <Button className="w-full mt-4">
+                        <BookOpen className="mr-2 h-4 w-4"/>
+                        Book an Appointment
+                    </Button>
+                </div>
+            </SheetContent>
+        </Sheet>
+    )
+  }
 
   const specialties = [
     { name: 'Cardiology', icon: HeartPulse, data: doctorData.cardiology },
@@ -117,26 +169,30 @@ export default function DoctorsPage() {
           <TabsContent key={spec.name} value={spec.name}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {spec.data.map((doctor) => (
-                <Card key={doctor.id} className="text-center">
-                  <CardHeader className="items-center">
-                    <Avatar className="h-24 w-24 mb-4">
-                        <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
-                        <AvatarFallback>{doctor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                    </Avatar>
-                    <CardTitle>{doctor.name}</CardTitle>
-                    <CardDescription>{doctor.hospital}</CardDescription>
-                  </CardHeader>
+                <Card key={doctor.id} className="text-center flex flex-col">
+                  <div className="flex-grow cursor-pointer" onClick={() => setViewingDoctor(doctor)}>
+                    <CardHeader className="items-center">
+                      <Avatar className="h-24 w-24 mb-4">
+                          <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
+                          <AvatarFallback>{doctor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <CardTitle>{doctor.name}</CardTitle>
+                      <CardDescription>{doctor.hospital}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       <div className="flex items-center justify-center mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`h-5 w-5 ${i < doctor.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                        <span className="ml-2 text-sm text-muted-foreground">({doctor.rating.toFixed(1)})</span>
+                      </div>
+                    </CardContent>
+                  </div>
                   <CardContent>
-                     <div className="flex items-center justify-center mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-5 w-5 ${i < doctor.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                      ))}
-                      <span className="ml-2 text-sm text-muted-foreground">({doctor.rating.toFixed(1)})</span>
-                    </div>
                     <Button
                       className="w-full"
                       variant={selected.find(s => s.id === doctor.id) ? 'default' : 'outline'}
-                      onClick={() => handleSelect(doctor)}
+                      onClick={(e) => handleSelect(e, doctor)}
                       disabled={!selected.find(s => s.id === doctor.id) && selected.length >= 3}
                     >
                       {selected.find(s => s.id === doctor.id) ? 'Selected' : 'Compare'}
@@ -165,6 +221,7 @@ export default function DoctorsPage() {
         </div>
       )}
       <ComparisonSheet />
+      <DoctorDetailSheet doctor={viewingDoctor} onOpenChange={(open) => !open && setViewingDoctor(null)} />
     </div>
   );
 }

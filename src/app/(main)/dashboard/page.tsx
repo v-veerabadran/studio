@@ -1,12 +1,12 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
+import { useUser } from "@/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { User, BarChart2, Settings, LifeBuoy } from "lucide-react";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user } = useUser();
 
   const features = [
     {

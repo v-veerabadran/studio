@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/user-nav";
-import { useAuth } from "@/hooks/use-auth";
+import { useUser } from "@/firebase";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user } = useUser();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

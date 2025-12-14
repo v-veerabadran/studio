@@ -17,12 +17,15 @@ export default function Header() {
   const { user } = useUser();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container flex h-16 items-center">
-        <div className="md:hidden">
-          <SidebarTrigger />
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center">
+          <div className="md:hidden">
+            <SidebarTrigger />
+          </div>
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+
+        <div className="flex items-center space-x-4">
           {user ? (
             <>
               <TooltipProvider>

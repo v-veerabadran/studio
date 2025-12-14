@@ -75,7 +75,7 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+          <DropdownMenuItem onClick={() => router.push('/account')}>
             <UserIcon className="mr-2 h-4 w-4" />
             <span>My Account</span>
           </DropdownMenuItem>

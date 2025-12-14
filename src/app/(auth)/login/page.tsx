@@ -18,9 +18,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { signInWithEmail } from "@/lib/firebase/auth";
+import { signInWithEmail, signInWithProvider } from "@/lib/firebase/auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Chrome, Facebook, Twitter } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -31,6 +32,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isProviderLoading, setIsProviderLoading] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,6 +56,23 @@ export default function LoginPage() {
       });
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleProviderSignIn(provider: 'google' | 'facebook' | 'twitter') {
+    setIsProviderLoading(provider);
+    try {
+      await signInWithProvider(provider);
+      router.push('/dashboard');
+    } catch (error: any) {
+       console.error(error);
+       toast({
+        title: `Sign in with ${provider} failed`,
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProviderLoading(null);
     }
   }
 
@@ -103,6 +122,21 @@ export default function LoginPage() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>
+            <div className="relative w-full">
+              <Separator />
+              <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">OR</p>
+            </div>
+            <div className="w-full grid grid-cols-3 gap-2">
+                <Button variant="outline" onClick={() => handleProviderSignIn('google')} disabled={!!isProviderLoading}>
+                    {isProviderLoading === 'google' ? <Loader2 className="animate-spin" /> : <Chrome />}
+                </Button>
+                <Button variant="outline" onClick={() => handleProviderSignIn('facebook')} disabled={!!isProviderLoading}>
+                    {isProviderLoading === 'facebook' ? <Loader2 className="animate-spin" /> : <Facebook />}
+                </Button>
+                <Button variant="outline" onClick={() => handleProviderSignIn('twitter')} disabled={!!isProviderLoading}>
+                    {isProviderLoading === 'twitter' ? <Loader2 className="animate-spin" /> : <Twitter />}
+                </Button>
+            </div>
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
               <Link href="/signup" className="font-medium text-primary hover:underline">

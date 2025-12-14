@@ -66,10 +66,10 @@ export default function MessagesPage() {
                                 <AvatarImage src={convo.avatar} alt={convo.sender} data-ai-hint="person portrait" />
                                 <AvatarFallback>{convo.initials}</AvatarFallback>
                             </Avatar>
-                            <div className="flex-grow">
+                            <div className="flex-grow overflow-hidden">
                                 <div className="flex justify-between">
-                                    <p className="font-semibold">{convo.sender}</p>
-                                    <p className="text-xs text-muted-foreground">{convo.timestamp}</p>
+                                    <p className="font-semibold truncate">{convo.sender}</p>
+                                    <p className="text-xs text-muted-foreground flex-shrink-0">{convo.timestamp}</p>
                                 </div>
                                 <p className={cn("text-sm text-muted-foreground truncate", convo.unread > 0 && "font-bold text-foreground")}>
                                   {convo.messages[convo.messages.length - 1].text}

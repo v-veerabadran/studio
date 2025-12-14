@@ -8,12 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

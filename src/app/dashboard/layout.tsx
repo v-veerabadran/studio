@@ -17,8 +17,20 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, User } from "lucide-react";
+import { BarChart2, User, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+
+function ToggleSidebarButton() {
+    const { state, toggleSidebar } = useSidebar();
+    return (
+        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex">
+            {state === 'expanded' ? <PanelLeftClose /> : <PanelLeftOpen />}
+        </Button>
+    )
+}
+
 
 export default function DashboardLayout({
   children,
@@ -80,7 +92,7 @@ export default function DashboardLayout({
       <Sidebar>
         <SidebarHeader>
           <Logo />
-          <SidebarTrigger className="hidden md:flex" />
+          <ToggleSidebarButton />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>

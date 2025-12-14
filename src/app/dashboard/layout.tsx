@@ -9,17 +9,15 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
-  SidebarInset,
+  SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Settings, User } from "lucide-react";
+import { BarChart2, User } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 export default function DashboardLayout({
@@ -79,43 +77,42 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar variant="inset" collapsible="icon">
+      <Sidebar>
+        <SidebarHeader>
+          <Logo />
+          <SidebarTrigger className="hidden md:flex" />
+        </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup>
-            <div className="p-2 pb-0">
-               <Logo />
-            </div>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <Link href="/dashboard" passHref>
-                  <SidebarMenuButton
-                    isActive={pathname === "/dashboard"}
-                    tooltip="Dashboard"
-                  >
-                    <BarChart2 />
-                    <span>Dashboard</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                 <Link href="/account" passHref>
-                  <SidebarMenuButton
-                    isActive={pathname === "/account"}
-                    tooltip="My Account"
-                  >
-                    <User />
-                    <span>My Account</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Link href="/dashboard" passHref>
+                <SidebarMenuButton
+                  isActive={pathname === "/dashboard"}
+                  tooltip="Dashboard"
+                >
+                  <BarChart2 />
+                  <span>Dashboard</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <Link href="/account" passHref>
+                <SidebarMenuButton
+                  isActive={pathname === "/account"}
+                  tooltip="My Account"
+                >
+                  <User />
+                  <span>My Account</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
+      <main className="flex-1">
         <Header />
-        <main className="flex-1">{children}</main>
-      </SidebarInset>
+        {children}
+      </main>
     </SidebarProvider>
   );
 }

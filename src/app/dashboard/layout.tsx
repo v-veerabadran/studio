@@ -12,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import Link from "next/link";

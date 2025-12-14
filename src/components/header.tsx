@@ -14,7 +14,7 @@ export default function Header() {
   const { user } = useUser();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95">
       <div className="container flex h-16 items-center">
         <div className="md:hidden">
           <SidebarTrigger />

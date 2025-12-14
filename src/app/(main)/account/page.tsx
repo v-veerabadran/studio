@@ -1,9 +1,11 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -20,10 +22,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/firebase";
 import { updateUserProfile } from "@/lib/firebase/auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Upload, FileText, BadgeCheck, BadgeAlert, History } from "lucide-react";
+import { Loader2, Upload, FileText, BadgeCheck, History, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Separator } from "@/components/ui/separator";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -34,15 +37,36 @@ const contactFormSchema = z.object({
     phoneNumber: z.string().optional(),
 });
 
+const searchHistory = [
+    { id: 1, query: "How to implement user authentication in Next.js", time: "2 hours ago" },
+    { id: 2, query: "Best practices for Tailwind CSS", time: "5 hours ago" },
+    { id: 3, query: "ShadCN UI components tutorial", time: "1 day ago" },
+    { id: 4, query: "Firebase security rules for user profiles", time: "2 days ago" },
+];
+
 export default function AccountPage() {
   const { user } = useUser();
   const { toast } = useToast();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const avatarImage = PlaceHolderImages.find(img => img.id === 'user-avatar');
+
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      setActiveTab(hash);
+    }
+  }, []);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    router.push(`/account#${value}`, { scroll: false });
+  };
 
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
@@ -92,14 +116,10 @@ export default function AccountPage() {
 
     setIsLoading(true);
     try {
-      // In a real app, you'd upload the file to a service like Firebase Storage
-      // and get back a URL. For now, we just simulate it.
       let photoURL = user.photoURL;
       if (selectedFile) {
         toast({ title: "Note", description: "Image upload is a demo. The image is not saved." });
-        // This is where you would call your upload service
-        // photoURL = await uploadProfilePicture(selectedFile);
-        photoURL = previewUrl; // Use local preview URL for demo
+        photoURL = previewUrl; 
       }
 
       await updateUserProfile(user, { displayName: values.name, photoURL });
@@ -138,7 +158,7 @@ export default function AccountPage() {
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">My Account</h1>
-      <Tabs defaultValue="profile" className="max-w-3xl mx-auto">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-3xl mx-auto">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="contact">Contact Info</TabsTrigger>
@@ -284,13 +304,30 @@ export default function AccountPage() {
           <Card>
             <CardHeader>
               <CardTitle>Search History</CardTitle>
-              <CardDescription>View your past searches.</CardDescription>
+              <CardDescription>A log of your past search queries.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
-                    <History className="h-12 w-12 text-muted-foreground" />
-                    <p className="mt-4 text-muted-foreground">You have no search history yet.</p>
-                </div>
+                {searchHistory.length > 0 ? (
+                    <div className="space-y-4">
+                        {searchHistory.map((item, index) => (
+                            <div key={item.id}>
+                                <div className="flex items-start gap-4">
+                                    <Search className="h-4 w-4 text-muted-foreground mt-1" />
+                                    <div className="flex-1">
+                                        <p className="text-sm">{item.query}</p>
+                                        <p className="text-xs text-muted-foreground">{item.time}</p>
+                                    </div>
+                                </div>
+                                {index < searchHistory.length - 1 && <Separator className="mt-4" />}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
+                        <History className="h-12 w-12 text-muted-foreground" />
+                        <p className="mt-4 text-muted-foreground">You have no search history yet.</p>
+                    </div>
+                )}
             </CardContent>
           </Card>
         </TabsContent>

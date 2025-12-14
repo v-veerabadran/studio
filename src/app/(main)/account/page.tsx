@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,109 +20,265 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/firebase";
 import { updateUserProfile } from "@/lib/firebase/auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, FileText, BadgeCheck, BadgeAlert } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
-const formSchema = z.object({
+const profileFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email(),
+});
+
+const contactFormSchema = z.object({
+    email: z.string().email(),
+    phoneNumber: z.string().optional(),
 });
 
 export default function AccountPage() {
   const { user } = useUser();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const avatarImage = PlaceHolderImages.find(img => img.id === 'user-avatar');
+
+  const profileForm = useForm<z.infer<typeof profileFormSchema>>({
+    resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: "",
-      email: "",
+    },
+  });
+
+  const contactForm = useForm<z.infer<typeof contactFormSchema>>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+        email: "",
+        phoneNumber: "",
     },
   });
 
   useEffect(() => {
     if (user) {
-      form.reset({
+      profileForm.reset({
         name: user.displayName ?? "",
-        email: user.email ?? "",
       });
+      contactForm.reset({
+        email: user.email ?? "",
+        phoneNumber: user.phoneNumber ?? "",
+      });
+      setPreviewUrl(user.photoURL);
     }
-  }, [user, form]);
+  }, [user, profileForm, contactForm]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfileUpdate = async (values: z.infer<typeof profileFormSchema>) => {
     if (!user) {
-        toast({ title: "Error", description: "You must be logged in to update your profile.", variant: "destructive" });
-        return;
+      toast({ title: "Error", description: "You must be logged in to update your profile.", variant: "destructive" });
+      return;
     }
 
     setIsLoading(true);
     try {
-      await updateUserProfile(user, { displayName: values.name });
+      // In a real app, you'd upload the file to a service like Firebase Storage
+      // and get back a URL. For now, we just simulate it.
+      let photoURL = user.photoURL;
+      if (selectedFile) {
+        toast({ title: "Note", description: "Image upload is a demo. The image is not saved." });
+        // This is where you would call your upload service
+        // photoURL = await uploadProfilePicture(selectedFile);
+        photoURL = previewUrl; // Use local preview URL for demo
+      }
+
+      await updateUserProfile(user, { displayName: values.name, photoURL });
       toast({
         title: "Profile Updated",
-        description: "Your name has been successfully updated.",
+        description: "Your profile has been successfully updated.",
       });
     } catch (error: any) {
       console.error(error);
       toast({
         title: "Update Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
+        description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  const handleContactUpdate = (values: z.infer<typeof contactFormSchema>) => {
+    toast({
+        title: "Coming Soon!",
+        description: "Updating contact information is not yet implemented.",
+    });
   }
+
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return "AC";
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
 
   return (
     <div className="container py-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">My Account</h1>
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Manage your account settings.</CardDescription>
-          </CardHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input disabled {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" disabled={isLoading || !form.formState.isDirty}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save Changes
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </Card>
-      </div>
+      <h1 className="text-3xl font-bold mb-8">My Account</h1>
+      <Tabs defaultValue="profile" className="max-w-3xl mx-auto">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="contact">Contact Info</TabsTrigger>
+          <TabsTrigger value="documents">My Documents</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="profile">
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile Picture & Name</CardTitle>
+              <CardDescription>Update your photo and display name.</CardDescription>
+            </CardHeader>
+            <Form {...profileForm}>
+              <form onSubmit={profileForm.handleSubmit(handleProfileUpdate)}>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center space-x-6">
+                    <Avatar className="h-24 w-24">
+                        <AvatarImage src={previewUrl ?? avatarImage?.imageUrl} alt={user?.displayName ?? ""} />
+                        <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-2">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/*"
+                        />
+                        <Button type="button" onClick={() => fileInputRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload Photo
+                        </Button>
+                        <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                  </div>
+                  <FormField
+                    control={profileForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" disabled={isLoading || !profileForm.formState.isDirty && !selectedFile}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Changes
+                  </Button>
+                </CardFooter>
+              </form>
+            </Form>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="contact">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Contact Information</CardTitle>
+                    <CardDescription>Manage your email and phone number.</CardDescription>
+                </CardHeader>
+                 <Form {...contactForm}>
+                    <form onSubmit={contactForm.handleSubmit(handleContactUpdate)}>
+                        <CardContent className="space-y-4">
+                             <FormField
+                                control={contactForm.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Email Address</FormLabel>
+                                        <div className="flex items-center gap-4">
+                                            <FormControl>
+                                                <Input disabled {...field} />
+                                            </FormControl>
+                                            {user?.emailVerified ? (
+                                                <div className="flex items-center text-sm text-green-600">
+                                                    <BadgeCheck className="mr-1 h-4 w-4"/> Verified
+                                                </div>
+                                            ) : (
+                                                <Button type="button" variant="outline" size="sm">Verify</Button>
+                                            )}
+                                        </div>
+                                     <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                             <FormField
+                                control={contactForm.control}
+                                name="phoneNumber"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Phone Number</FormLabel>
+                                      <div className="flex items-center gap-4">
+                                        <FormControl>
+                                            <Input placeholder="Your phone number" {...field} />
+                                        </FormControl>
+                                        {user?.phoneNumber ? (
+                                             <div className="flex items-center text-sm text-green-600">
+                                                <BadgeCheck className="mr-1 h-4 w-4"/> Verified
+                                            </div>
+                                        ) : (
+                                            <Button type="button" variant="outline" size="sm">Verify</Button>
+                                        )}
+                                    </div>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                        </CardContent>
+                        <CardFooter>
+                            <Button type="submit" disabled={true}>
+                                Save Contact Info
+                            </Button>
+                        </CardFooter>
+                    </form>
+                </Form>
+            </Card>
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <Card>
+            <CardHeader>
+              <CardTitle>My Documents</CardTitle>
+              <CardDescription>View and manage your uploaded documents.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
+                    <FileText className="h-12 w-12 text-muted-foreground" />
+                    <p className="mt-4 text-muted-foreground">You haven't uploaded any documents yet.</p>
+                    <Button variant="link" className="mt-2">Upload a document</Button>
+                </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

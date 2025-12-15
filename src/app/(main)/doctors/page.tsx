@@ -161,7 +161,7 @@ export default function DoctorsPage() {
         <Button variant="outline">Advanced Search</Button>
       </div>
       <Tabs defaultValue="Cardiology" className="overflow-x-auto">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList>
           {specialties.map((spec) => (
             <TabsTrigger key={spec.name} value={spec.name}>
               <spec.icon className="mr-2 h-4 w-4" />

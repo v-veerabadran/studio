@@ -109,8 +109,15 @@ export default function HospitalsPage() {
                     <div className="relative h-48 w-full mb-4 rounded-lg overflow-hidden">
                         <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint}/>
                     </div>
-                    <SheetTitle className="text-2xl">{hospital.name}</SheetTitle>
-                    <SheetDescription>{hospital.location}</SheetDescription>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <SheetTitle className="text-2xl">{hospital.name}</SheetTitle>
+                            <SheetDescription>{hospital.location}</SheetDescription>
+                        </div>
+                        <Button variant="outline" size="icon">
+                            <Map className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </SheetHeader>
                 <div className="py-6 space-y-4">
                      <div className="flex items-center">
@@ -163,10 +170,6 @@ export default function HospitalsPage() {
                             <p className="text-sm text-muted-foreground mt-2">No affiliated doctors found.</p>
                         )}
                     </div>
-                    <Button className="w-full mt-4">
-                        <LocateFixed className="mr-2 h-4 w-4"/>
-                        Get Directions
-                    </Button>
                 </div>
             </SheetContent>
         </Sheet>

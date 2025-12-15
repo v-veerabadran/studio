@@ -18,7 +18,8 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription
+  SheetDescription,
+  SheetFooter
 } from '@/components/ui/sheet';
 import { hospitalData, type Hospital, doctorData, type Doctor } from '@/lib/data';
 import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile, Map, UserMd } from 'lucide-react';
@@ -152,7 +153,7 @@ export default function HospitalsPage() {
                         {affiliatedDoctors.length > 0 ? (
                             <div className="space-y-2 mt-2">
                                 {affiliatedDoctors.map(doctor => (
-                                     <Link key={doctor.id} href={`/book-appointment?doctorId=${doctor.id}`} passHref>
+                                     <Link key={doctor.id} href={`/doctors?view_doctor=${doctor.id}`} passHref>
                                         <div className="flex items-center gap-4 p-2 rounded-md hover:bg-accent cursor-pointer">
                                             <Avatar className="h-10 w-10">
                                                 <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
@@ -171,6 +172,11 @@ export default function HospitalsPage() {
                         )}
                     </div>
                 </div>
+                 <SheetFooter>
+                    <Button asChild className="w-full">
+                        <Link href={`/book-appointment?hospitalId=${hospital.id}`}>Book an Appointment</Link>
+                    </Button>
+                </SheetFooter>
             </SheetContent>
         </Sheet>
     )
@@ -263,5 +269,3 @@ export default function HospitalsPage() {
     </div>
   );
 }
-
-    

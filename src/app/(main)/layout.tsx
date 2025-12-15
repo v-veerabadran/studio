@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -27,6 +28,7 @@ import {
   Hospital,
   Users,
   BookOpen,
+  CreditCard,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 

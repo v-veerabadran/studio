@@ -1,3 +1,4 @@
+
 export type Hospital = {
     id: number;
     name: string;
@@ -8,7 +9,7 @@ export type Hospital = {
     imageUrl: string;
     imageHint: string;
     pros: string[];
-    cons: string[];
+    cons:string[];
 };
 
 export type Doctor = {
@@ -24,8 +25,6 @@ export type Doctor = {
     pros: string[];
     cons: string[];
 }
-
-export const allDoctors: Doctor[] = [];
 
 export const hospitalData = {
     cardiology: [
@@ -81,6 +80,5 @@ export const doctorData = {
     ]
 };
 
-Object.values(doctorData).forEach(specialty => {
-    allDoctors.push(...specialty);
-});
+export const allDoctors: Doctor[] = Object.values(doctorData).flat();
+export const allHospitals: Hospital[] = Object.values(hospitalData).flat();

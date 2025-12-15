@@ -9,15 +9,18 @@ import { allDoctors, type Doctor } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Clock, Calendar as CalendarIcon, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 function BookAppointmentPageContent() {
     const searchParams = useSearchParams();
     const { toast } = useToast();
     const [doctor, setDoctor] = useState<Doctor | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-    const [selectedTime, setSelectedTime] = useState<string | undefined>("8:00 PM");
+    const [selectedTime, setSelectedTime] = useState<string | undefined>();
 
     useEffect(() => {
         const doctorId = searchParams.get('doctorId');
@@ -25,14 +28,15 @@ function BookAppointmentPageContent() {
             const foundDoctor = allDoctors.find(d => d.id === parseInt(doctorId));
             setDoctor(foundDoctor || null);
         } else {
-            // If no doctor is selected, maybe default to the first one or show a selection UI
+            // Default to the first doctor if none is selected
             setDoctor(allDoctors[0]);
         }
     }, [searchParams]);
 
     const availableTimes = [
-        "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM",
-        "10:00 PM", "11:00 PM", "12:00 AM", "1:00 AM"
+        "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
+        "11:00 AM", "11:30 AM", "01:00 PM", "01:30 PM",
+        "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
     ];
 
     const handleBooking = () => {
@@ -68,7 +72,6 @@ function BookAppointmentPageContent() {
         calendarUrl.searchParams.append('details', `Doctor: ${doctor.name}, ${doctor.specialty}\nLocation: ${doctor.hospital}`);
         calendarUrl.searchParams.append('location', doctor.hospital);
 
-
         toast({
             title: "Appointment Confirmed",
             description: `Your appointment with ${doctor.name} is set for ${format(selectedDate, "PPP")} at ${selectedTime}.`,
@@ -83,52 +86,91 @@ function BookAppointmentPageContent() {
             duration: 10000,
         });
     }
-    
-    const today = new Date();
 
-    const getFullSelectedDateTime = () => {
-        if(!selectedDate || !selectedTime) return '';
-        const date = format(selectedDate, "MMMM d, yyyy");
-        return `${date} ${selectedTime}`;
+    if (!doctor) {
+        return (
+             <div className="container py-8">
+                <Card className="max-w-md mx-auto">
+                    <CardHeader>
+                        <CardTitle>Doctor not found</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Please select a doctor to book an appointment.</p>
+                        <Button asChild className="mt-4">
+                            <Link href="/doctors">Find a Doctor</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
-
+    
     return (
-        <div className="container py-8 flex justify-center items-center h-full">
-            <div className="bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-2xl relative">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-card transform rotate-45"></div>
-                <div className="flex">
-                    {/* Calendar Section */}
-                    <div className="w-[65%] p-4">
-                        <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            className="p-0"
-                        />
-                    </div>
-                    {/* Time Slot Section */}
-                    <div className="w-[35%] border-l border-border/50">
-                        <div className="p-4 flex flex-col h-full">
-                            {availableTimes.map(time => (
-                                <button
-                                    key={time}
-                                    onClick={() => setSelectedTime(time)}
-                                    className={cn(
-                                        "text-left p-2 rounded-md text-sm w-full",
-                                        "text-muted-foreground hover:text-foreground",
-                                        selectedTime === time && "bg-primary text-primary-foreground hover:text-primary-foreground"
-                                    )}
-                                >
-                                    {time}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+        <div className="container py-8">
+             <h1 className="text-3xl font-bold mb-8">Book an Appointment</h1>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Doctor Info */}
+                <div className="lg:col-span-1">
+                    <Card>
+                        <CardHeader className="items-center text-center">
+                             <Avatar className="h-24 w-24 mb-4">
+                                <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
+                                <AvatarFallback>{doctor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            </Avatar>
+                            <CardTitle>{doctor.name}</CardTitle>
+                            <CardDescription>{doctor.specialty}</CardDescription>
+                            <CardDescription>{doctor.hospital}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Separator />
+                            <div className="text-sm text-muted-foreground space-y-4 pt-4">
+                               <p>You are booking an appointment with {doctor.name}. Please select a date and time from the available slots.</p>
+                               {selectedDate && <p className="font-semibold text-foreground flex items-center gap-2"><CalendarIcon className="h-4 w-4" />{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>}
+                               {selectedTime && <p className="font-semibold text-foreground flex items-center gap-2"><Clock className="h-4 w-4" />{selectedTime}</p>}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
-                 {/* Footer */}
-                <div className="border-t border-border/50 p-3 flex justify-between items-center text-sm">
-                    <Button variant="ghost" className="uppercase text-xs tracking-wider" onClick={() => setSelectedDate(today)}>Today</Button>
-                    <p className="text-muted-foreground uppercase text-xs tracking-wider">{getFullSelectedDateTime()}</p>
+                
+                {/* Right Column: Calendar and Time */}
+                <div className="lg:col-span-2">
+                    <Card>
+                         <CardHeader>
+                            <CardTitle>Select a Date & Time</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="flex justify-center">
+                                <Calendar
+                                    mode="single"
+                                    selected={selectedDate}
+                                    onSelect={setSelectedDate}
+                                    className="p-0"
+                                    disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                />
+                            </div>
+                            <div className="space-y-4">
+                                <h3 className="font-semibold text-center md:text-left">
+                                    {selectedDate ? format(selectedDate, 'MMMM d') : 'Available Slots'}
+                                </h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    {availableTimes.map(time => (
+                                        <Button 
+                                            key={time} 
+                                            variant={selectedTime === time ? 'default' : 'outline'}
+                                            onClick={() => setSelectedTime(time)}
+                                        >
+                                            {time}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardContent>
+                         <div className="p-6 pt-0 text-right">
+                             <Button onClick={handleBooking} disabled={!selectedDate || !selectedTime}>
+                                Confirm Appointment
+                            </Button>
+                         </div>
+                    </Card>
                 </div>
             </div>
         </div>

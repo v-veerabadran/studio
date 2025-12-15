@@ -1,3 +1,5 @@
+"use client";
+
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useSidebar } from './ui/sidebar';

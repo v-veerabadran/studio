@@ -11,11 +11,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { allDoctors, type Doctor } from '@/lib/data';
-import { Check, Star, CalendarIcon, X } from 'lucide-react';
+import { Check, Star, CalendarIcon, X, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 function BookAppointmentPageContent() {
     const searchParams = useSearchParams();
@@ -49,9 +50,42 @@ function BookAppointmentPageContent() {
             return;
         }
 
+        const [time, modifier] = selectedTime.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+
+        if (modifier === 'PM' && hours < 12) {
+            hours += 12;
+        }
+        if (modifier === 'AM' && hours === 12) {
+            hours = 0;
+        }
+
+        const appointmentDateTime = new Date(selectedDate);
+        appointmentDateTime.setHours(hours, minutes, 0, 0);
+
+        const eventStart = appointmentDateTime.toISOString().replace(/-|:|\.\d\d\d/g, '');
+        const eventEnd = new Date(appointmentDateTime.getTime() + 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, '');
+
+        const calendarUrl = new URL('https://www.google.com/calendar/render');
+        calendarUrl.searchParams.append('action', 'TEMPLATE');
+        calendarUrl.searchParams.append('text', `Appointment with ${doctor.name}`);
+        calendarUrl.searchParams.append('dates', `${eventStart}/${eventEnd}`);
+        calendarUrl.searchParams.append('details', `Reason: ${reason || 'Not specified'}\nDoctor: ${doctor.name}\nSpecialty: ${doctor.specialty}`);
+        calendarUrl.searchParams.append('location', doctor.hospital);
+
+
         toast({
             title: "Appointment Booked!",
-            description: `Your appointment with ${doctor.name} on ${selectedDate.toLocaleDateString()} at ${selectedTime} is confirmed.`,
+            description: `Your appointment with ${doctor.name} on ${format(selectedDate, "PPP")} at ${selectedTime} is confirmed.`,
+            action: (
+                <Button asChild variant="secondary" size="sm">
+                    <Link href={calendarUrl.toString()} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Add to Google Calendar
+                    </Link>
+                </Button>
+            ),
+            duration: 10000,
         });
     }
 
@@ -94,13 +128,6 @@ function BookAppointmentPageContent() {
                             <CardTitle>Select a Date</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center gap-4">
-                            <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                                className="rounded-md border"
-                            />
                              <Popover>
                                 <PopoverTrigger asChild>
                                     <Button

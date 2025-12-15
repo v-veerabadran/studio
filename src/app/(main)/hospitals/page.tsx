@@ -152,7 +152,7 @@ export default function HospitalsPage() {
                         {affiliatedDoctors.length > 0 ? (
                             <div className="space-y-2 mt-2">
                                 {affiliatedDoctors.map(doctor => (
-                                     <Link key={doctor.id} href={`/doctors?view_doctor=${doctor.id}`} passHref>
+                                     <Link key={doctor.id} href={`/book-appointment?doctorId=${doctor.id}`} passHref>
                                         <div className="flex items-center gap-4 p-2 rounded-md hover:bg-accent cursor-pointer">
                                             <Avatar className="h-10 w-10">
                                                 <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
@@ -263,3 +263,5 @@ export default function HospitalsPage() {
     </div>
   );
 }
+
+    

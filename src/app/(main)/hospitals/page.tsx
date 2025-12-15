@@ -156,7 +156,7 @@ export default function HospitalsPage() {
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Find a Hospital</h1>
-        <Button variant="outline">View on Map</Button>
+        <Button variant="outline">Advanced Search</Button>
       </div>
       <Tabs defaultValue="Cardiology" className="overflow-x-auto">
         <TabsList className="grid w-full grid-cols-7">

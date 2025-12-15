@@ -164,6 +164,7 @@ function BookAppointmentPageContent() {
                                   orientation="portrait" 
                                   onChange={(newValue) => setSelectedDateTime(newValue)}
                                   value={selectedDateTime}
+                                  onAccept={(newValue) => setSelectedDateTime(newValue)}
                                   ampm={true}
                                   disablePast
                                 />

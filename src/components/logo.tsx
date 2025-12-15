@@ -10,7 +10,7 @@ export function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2.5">
       <ShieldCheck className="h-7 w-7 text-primary" />
-      <h1 className={cn("text-xl font-bold text-foreground group-data-[state=expanded]/sidebar:opacity-100 group-data-[state=collapsed]/sidebar:opacity-0 transition-opacity duration-200", state === 'collapsed' && "hidden")}>Accountable</h1>
+      <h1 className={cn("text-xl font-bold text-foreground transition-opacity duration-200", state === 'collapsed' && "opacity-0 hidden")}>Accountable</h1>
     </Link>
   );
 }

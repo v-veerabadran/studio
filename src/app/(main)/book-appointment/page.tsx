@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { ExternalLink, Video, Building } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from '@/components/ui/textarea';
@@ -167,8 +167,11 @@ function BookAppointmentPageContent() {
                                         mode="single"
                                         selected={selectedDate}
                                         onSelect={(date) => { setSelectedDate(date); setSelectedTime(undefined); }}
-                                        className="p-3 flex justify-center"
+                                        className="p-3"
                                         disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                        fromYear={new Date().getFullYear()}
+                                        toYear={new Date().getFullYear() + 1}
+                                        captionLayout="dropdown-buttons"
                                     />
                                     <div className="p-3 border-t">
                                         <h3 className="font-semibold text-center text-sm mb-4">

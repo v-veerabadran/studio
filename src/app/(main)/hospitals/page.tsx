@@ -19,7 +19,7 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 import { hospitalData, type Hospital } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile, Map } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 
@@ -189,7 +189,7 @@ export default function HospitalsPage() {
                       </div>
                     </CardContent>
                   </div>
-                  <CardContent>
+                  <CardFooter className="flex gap-2">
                     <Button
                       className="w-full"
                       variant={selected.find(s => s.id === hospital.id) ? 'default' : 'outline'}
@@ -198,7 +198,10 @@ export default function HospitalsPage() {
                     >
                       {selected.find(s => s.id === hospital.id) ? 'Selected' : 'Compare'}
                     </Button>
-                  </CardContent>
+                    <Button variant="outline" size="icon">
+                        <Map className="h-4 w-4"/>
+                    </Button>
+                  </CardFooter>
                 </Card>
               ))}
             </div>
@@ -226,3 +229,5 @@ export default function HospitalsPage() {
     </div>
   );
 }
+
+    

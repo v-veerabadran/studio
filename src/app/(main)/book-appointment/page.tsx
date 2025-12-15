@@ -40,6 +40,7 @@ function BookAppointmentPageContent() {
         const foundDoctor = allDoctors.find(d => d.id === parseInt(doctorId));
         setDoctor(foundDoctor || null);
         setSelectedDoctorId(doctorId);
+        setSelectedTime(undefined); // Reset time when doctor changes
     }
 
     const availableTimes = [
@@ -101,13 +102,13 @@ function BookAppointmentPageContent() {
              <h1 className="text-3xl font-bold mb-8">Book an Appointment</h1>
             <Card className="max-w-4xl mx-auto">
                 <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                         {/* Left Column: Form Inputs */}
                         <div className="space-y-6">
                             <div>
-                                <Label htmlFor="doctor-select">1. Select a Doctor</Label>
+                                <Label htmlFor="doctor-select" className="text-sm font-semibold">1. Select a Doctor</Label>
                                 <Select onValueChange={handleDoctorChange} value={selectedDoctorId}>
-                                    <SelectTrigger id="doctor-select">
+                                    <SelectTrigger id="doctor-select" className="mt-2">
                                         <SelectValue placeholder="Choose a doctor..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -130,9 +131,10 @@ function BookAppointmentPageContent() {
                             </div>
                             
                             <div>
-                                <Label htmlFor="reason-for-visit">2. Reason for Visit (Optional)</Label>
+                                <Label htmlFor="reason-for-visit" className="text-sm font-semibold">2. Reason for Visit (Optional)</Label>
                                 <Textarea 
                                     id="reason-for-visit"
+                                    className="mt-2"
                                     placeholder="Briefly describe the reason for your appointment..." 
                                     value={reasonForVisit}
                                     onChange={(e) => setReasonForVisit(e.target.value)}
@@ -140,17 +142,17 @@ function BookAppointmentPageContent() {
                             </div>
 
                             <div>
-                                <Label>3. Select Visit Type</Label>
-                                <RadioGroup defaultValue="in-person" className="flex items-center gap-4 mt-2" onValueChange={setVisitType}>
-                                    <Label htmlFor="in-person" className="flex items-center gap-2 border rounded-md p-3 flex-1 has-[:checked]:bg-accent has-[:checked]:border-primary cursor-pointer">
+                                <Label className="text-sm font-semibold">3. Select Visit Type</Label>
+                                <RadioGroup defaultValue="in-person" className="grid grid-cols-2 gap-4 mt-2" onValueChange={(value) => setVisitType(value as "in-person" | "virtual")}>
+                                    <Label htmlFor="in-person" className="flex items-center gap-3 border rounded-md p-4 cursor-pointer has-[:checked]:bg-accent has-[:checked]:border-primary transition-colors">
                                         <RadioGroupItem value="in-person" id="in-person" />
                                         <Building className="h-5 w-5" />
-                                        <span>In-Person</span>
+                                        <span className="font-medium">In-Person</span>
                                     </Label>
-                                     <Label htmlFor="virtual" className="flex items-center gap-2 border rounded-md p-3 flex-1 has-[:checked]:bg-accent has-[:checked]:border-primary cursor-pointer">
+                                     <Label htmlFor="virtual" className="flex items-center gap-3 border rounded-md p-4 cursor-pointer has-[:checked]:bg-accent has-[:checked]:border-primary transition-colors">
                                         <RadioGroupItem value="virtual" id="virtual" />
                                         <Video className="h-5 w-5" />
-                                        <span>Virtual</span>
+                                        <span className="font-medium">Virtual</span>
                                     </Label>
                                 </RadioGroup>
                             </div>
@@ -159,17 +161,17 @@ function BookAppointmentPageContent() {
                         {/* Right Column: Calendar and Time */}
                         <div className="space-y-6">
                            <div>
-                                <Label>4. Select a Date & Time</Label>
-                                <div className="border rounded-md p-4 mt-2">
+                                <Label className="text-sm font-semibold">4. Select a Date & Time</Label>
+                                <div className="border rounded-md mt-2">
                                      <Calendar
                                         mode="single"
                                         selected={selectedDate}
-                                        onSelect={setSelectedDate}
-                                        className="p-0 flex justify-center"
+                                        onSelect={(date) => { setSelectedDate(date); setSelectedTime(undefined); }}
+                                        className="p-3 flex justify-center"
                                         disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
                                     />
-                                    <div className="mt-4 space-y-2">
-                                        <h3 className="font-semibold text-center text-sm">
+                                    <div className="p-3 border-t">
+                                        <h3 className="font-semibold text-center text-sm mb-4">
                                             Available Slots on {selectedDate ? format(selectedDate, 'MMMM d') : 'selected date'}
                                         </h3>
                                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -179,6 +181,7 @@ function BookAppointmentPageContent() {
                                                     variant={selectedTime === time ? 'default' : 'outline'}
                                                     onClick={() => setSelectedTime(time)}
                                                     size="sm"
+                                                    disabled={!doctor || !selectedDate}
                                                 >
                                                     {time}
                                                 </Button>
@@ -190,20 +193,21 @@ function BookAppointmentPageContent() {
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="flex-col items-stretch gap-4">
+                <CardFooter className="flex-col items-stretch gap-4 border-t pt-6">
                      <Button 
                         onClick={handleBooking} 
                         disabled={!selectedDate || !selectedTime || !doctor}
                         size="lg"
+                        className="w-full"
                     >
                         Confirm Appointment
                     </Button>
                      {doctor && selectedDate && selectedTime && (
-                        <Card className="bg-muted/50">
-                            <CardHeader>
+                        <Card className="bg-muted/50 border-0">
+                            <CardHeader className="p-4">
                                 <CardTitle className="text-base">Appointment Summary</CardTitle>
                             </CardHeader>
-                            <CardContent className="text-sm">
+                            <CardContent className="text-sm p-4 pt-0">
                                 <p><strong>Doctor:</strong> {doctor.name}</p>
                                 <p><strong>Date:</strong> {format(selectedDate, "EEEE, MMMM d, yyyy")}</p>
                                 <p><strong>Time:</strong> {selectedTime}</p>
@@ -224,5 +228,3 @@ export default function BookAppointmentPage() {
         </Suspense>
     )
 }
-
-    

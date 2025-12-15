@@ -31,6 +31,7 @@ function BookAppointmentPageContent() {
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | undefined>();
     const [doctor, setDoctor] = useState<Doctor | null>(null);
     const [selectedDateTime, setSelectedDateTime] = useState<Dayjs | null>(null);
+    const [tempDateTime, setTempDateTime] = useState<Dayjs | null>(null);
     const [reasonForVisit, setReasonForVisit] = useState("");
     const [visitType, setVisitType] = useState<"in-person" | "virtual">("in-person");
 
@@ -164,13 +165,10 @@ function BookAppointmentPageContent() {
                              <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <StaticDateTimePicker 
                                   orientation={isMobile ? "portrait" : "landscape"} 
-                                  value={selectedDateTime}
-                                  onChange={(newValue) => setSelectedDateTime(newValue)}
+                                  value={tempDateTime}
+                                  onChange={(newValue) => setTempDateTime(newValue)}
                                   onAccept={(newValue) => setSelectedDateTime(newValue)}
-                                  onClose={() => {
-                                    // You can add logic here if needed when the picker closes.
-                                    // For now, we are good with just accepting the value.
-                                  }}
+                                  onClose={() => setTempDateTime(selectedDateTime)}
                                   ampm={true}
                                   disablePast
                                 />

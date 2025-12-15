@@ -25,6 +25,7 @@ function BookAppointmentPageContent() {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     const [selectedTime, setSelectedTime] = useState<string | undefined>();
     const [reason, setReason] = useState("");
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
     useEffect(() => {
         const doctorId = searchParams.get('doctorId');
@@ -128,7 +129,7 @@ function BookAppointmentPageContent() {
                             <CardTitle>Select a Date</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center gap-4">
-                             <Popover>
+                             <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                                 <PopoverTrigger asChild>
                                     <Button
                                     variant={"outline"}
@@ -145,7 +146,10 @@ function BookAppointmentPageContent() {
                                     <Calendar
                                         mode="single"
                                         selected={selectedDate}
-                                        onSelect={setSelectedDate}
+                                        onSelect={(date) => {
+                                            setSelectedDate(date);
+                                            setIsCalendarOpen(false);
+                                        }}
                                         captionLayout="dropdown-buttons"
                                         fromYear={new Date().getFullYear()}
                                         toYear={new Date().getFullYear() + 5}

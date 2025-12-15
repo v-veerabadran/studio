@@ -11,10 +11,9 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { allDoctors, type Doctor } from '@/lib/data';
-import { Check, Star, CalendarIcon } from 'lucide-react';
+import { Check, Star, CalendarIcon, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -100,9 +99,7 @@ function BookAppointmentPageContent() {
                                 selected={selectedDate}
                                 onSelect={setSelectedDate}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                                captionLayout="dropdown-buttons"
-                                fromYear={new Date().getFullYear()}
-                                toYear={new Date().getFullYear() + 5}
+                                className="rounded-md border"
                             />
                              <Popover>
                                 <PopoverTrigger asChild>
@@ -119,10 +116,13 @@ function BookAppointmentPageContent() {
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0">
                                     <Calendar
-                                    mode="single"
-                                    selected={selectedDate}
-                                    onSelect={setSelectedDate}
-                                    initialFocus
+                                        mode="single"
+                                        selected={selectedDate}
+                                        onSelect={setSelectedDate}
+                                        captionLayout="dropdown-buttons"
+                                        fromYear={new Date().getFullYear()}
+                                        toYear={new Date().getFullYear() + 5}
+                                        initialFocus
                                     />
                                 </PopoverContent>
                             </Popover>

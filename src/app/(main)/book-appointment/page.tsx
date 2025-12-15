@@ -17,12 +17,14 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import type { Dayjs } from 'dayjs';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 function BookAppointmentPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { toast } = useToast();
+    const isMobile = useIsMobile();
     
     const [hospital, setHospital] = useState<Hospital | null>(null);
     const [doctorsList, setDoctorsList] = useState<Doctor[]>(allDoctors);
@@ -161,10 +163,14 @@ function BookAppointmentPageContent() {
                         <CardContent>
                              <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <StaticDateTimePicker 
-                                  orientation="portrait" 
-                                  onChange={(newValue) => setSelectedDateTime(newValue)}
+                                  orientation={isMobile ? "portrait" : "landscape"} 
                                   value={selectedDateTime}
+                                  onChange={(newValue) => setSelectedDateTime(newValue)}
                                   onAccept={(newValue) => setSelectedDateTime(newValue)}
+                                  onClose={() => {
+                                    // You can add logic here if needed when the picker closes.
+                                    // For now, we are good with just accepting the value.
+                                  }}
                                   ampm={true}
                                   disablePast
                                 />

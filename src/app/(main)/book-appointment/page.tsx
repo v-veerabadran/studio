@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Suspense, useState, useEffect } from 'react';
@@ -10,8 +11,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { allDoctors, type Doctor } from '@/lib/data';
-import { Check, Star } from 'lucide-react';
+import { Check, Star, CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 function BookAppointmentPageContent() {
     const searchParams = useSearchParams();
@@ -89,13 +94,38 @@ function BookAppointmentPageContent() {
                         <CardHeader>
                             <CardTitle>Select a Date</CardTitle>
                         </CardHeader>
-                        <CardContent className="flex justify-center">
+                        <CardContent className="flex flex-col items-center gap-4">
                             <Calendar
                                 mode="single"
                                 selected={selectedDate}
                                 onSelect={setSelectedDate}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                                captionLayout="dropdown-buttons"
+                                fromYear={new Date().getFullYear()}
+                                toYear={new Date().getFullYear() + 5}
                             />
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-[280px] justify-start text-left font-normal",
+                                        !selectedDate && "text-muted-foreground"
+                                    )}
+                                    >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                    mode="single"
+                                    selected={selectedDate}
+                                    onSelect={setSelectedDate}
+                                    initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
                         </CardContent>
                     </Card>
                     <Card>

@@ -25,6 +25,8 @@ export type Doctor = {
     cons: string[];
 }
 
+export const allDoctors: Doctor[] = [];
+
 export const hospitalData = {
     cardiology: [
         { id: 1, name: "City Heart Institute", location: "Metropolis", rating: 4.8, specialty: "Cardiology", emergency: true, imageUrl: "https://picsum.photos/seed/hospital1/600/400", imageHint: "hospital building", pros: ["Top-rated cardiac unit", "Latest technology"], cons: ["Can be expensive", "Long wait times"] },
@@ -78,3 +80,7 @@ export const doctorData = {
         { id: 8, name: "Dr. Isabella Chen", specialty: "Dentistry", hospital: "Bright Smile Dental", rating: 4.9, experience: 11, boardCertified: true, imageUrl: "https://picsum.photos/seed/doc8/400/400", imageHint: "smiling woman", pros: ["Painless procedures", "Great with kids"], cons: ["Limited evening appointments"] },
     ]
 };
+
+Object.values(doctorData).forEach(specialty => {
+    allDoctors.push(...specialty);
+});

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -19,10 +20,12 @@ import {
   SheetTitle,
   SheetDescription
 } from '@/components/ui/sheet';
-import { hospitalData, type Hospital } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile, Map } from 'lucide-react';
+import { hospitalData, type Hospital, doctorData, type Doctor } from '@/lib/data';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile, Map, UserMd } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Users } from 'lucide-react';
 
 export default function HospitalsPage() {
   const [selected, setSelected] = useState<Hospital[]>([]);
@@ -96,9 +99,12 @@ export default function HospitalsPage() {
 
   const HospitalDetailSheet = ({ hospital, onOpenChange }: { hospital: Hospital | null, onOpenChange: (open: boolean) => void }) => {
     if (!hospital) return null;
+    
+    const affiliatedDoctors = Object.values(doctorData).flat().filter(doctor => doctor.hospital === hospital.name);
+
     return (
         <Sheet open={!!hospital} onOpenChange={onOpenChange}>
-            <SheetContent className="w-full sm:max-w-lg">
+            <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
                 <SheetHeader>
                     <div className="relative h-48 w-full mb-4 rounded-lg overflow-hidden">
                         <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint}/>
@@ -132,6 +138,30 @@ export default function HospitalsPage() {
                         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                             {hospital.cons.map((con, index) => <li key={index}>{con}</li>)}
                         </ul>
+                    </div>
+                    <Separator />
+                     <div>
+                        <h4 className="font-semibold mb-2 flex items-center"><Users className="h-4 w-4 mr-2" /> Affiliated Doctors</h4>
+                        {affiliatedDoctors.length > 0 ? (
+                            <div className="space-y-2 mt-2">
+                                {affiliatedDoctors.map(doctor => (
+                                     <Link key={doctor.id} href={`/doctors?view_doctor=${doctor.id}`} passHref>
+                                        <div className="flex items-center gap-4 p-2 rounded-md hover:bg-accent cursor-pointer">
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
+                                                <AvatarFallback>{doctor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-semibold text-sm">{doctor.name}</p>
+                                                <p className="text-xs text-muted-foreground">{doctor.specialty}</p>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-muted-foreground mt-2">No affiliated doctors found.</p>
+                        )}
                     </div>
                     <Button className="w-full mt-4">
                         <LocateFixed className="mr-2 h-4 w-4"/>

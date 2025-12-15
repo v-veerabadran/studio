@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -19,14 +20,25 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { doctorData, type Doctor } from '@/lib/data';
+import { doctorData, type Doctor, allDoctors } from '@/lib/data';
 import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, BookOpen, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-export default function DoctorsPage() {
+function DoctorsPageContent() {
+  const searchParams = useSearchParams();
   const [selected, setSelected] = useState<Doctor[]>([]);
   const [isComparing, setIsComparing] = useState(false);
   const [viewingDoctor, setViewingDoctor] = useState<Doctor | null>(null);
+
+  useEffect(() => {
+    const doctorId = searchParams.get('view_doctor');
+    if (doctorId) {
+      const doctor = allDoctors.find(d => d.id === parseInt(doctorId));
+      if (doctor) {
+        setViewingDoctor(doctor);
+      }
+    }
+  }, [searchParams]);
 
   const handleSelect = (e: React.MouseEvent, item: Doctor) => {
     e.stopPropagation(); // Prevent card click from firing
@@ -161,7 +173,7 @@ export default function DoctorsPage() {
         <Button variant="outline">Advanced Search</Button>
       </div>
       <Tabs defaultValue="Cardiology" className="overflow-x-auto">
-        <TabsList>
+        <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
           {specialties.map((spec) => (
             <TabsTrigger key={spec.name} value={spec.name}>
               <spec.icon className="mr-2 h-4 w-4" />
@@ -228,4 +240,12 @@ export default function DoctorsPage() {
       <DoctorDetailSheet doctor={viewingDoctor} onOpenChange={(open) => !open && setViewingDoctor(null)} />
     </div>
   );
+}
+
+export default function DoctorsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DoctorsPageContent />
+        </Suspense>
+    )
 }

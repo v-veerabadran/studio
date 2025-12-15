@@ -156,10 +156,6 @@ function DoctorsPageContent() {
                             {doctor.cons.map((con, index) => <li key={index}>{con}</li>)}
                         </ul>
                     </div>
-                    <Button className="w-full mt-4" onClick={() => router.push(`/book-appointment?doctorId=${doctor.id}`)}>
-                        <BookOpen className="mr-2 h-4 w-4"/>
-                        Book an Appointment
-                    </Button>
                 </div>
             </SheetContent>
         </Sheet>

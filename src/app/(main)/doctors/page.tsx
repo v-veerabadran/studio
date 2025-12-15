@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { doctorData, type Doctor } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, BookOpen } from 'lucide-react';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, BookOpen, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export default function DoctorsPage() {
@@ -148,6 +148,10 @@ export default function DoctorsPage() {
     { name: 'Cardiology', icon: HeartPulse, data: doctorData.cardiology },
     { name: 'Pulmonology', icon: Wind, data: doctorData.pulmonology },
     { name: 'Nephrology', icon: Filter, data: doctorData.nephrology },
+    { name: 'Neurology', icon: Brain, data: doctorData.neurology },
+    { name: 'Dermatology', icon: PersonStanding, data: doctorData.dermatology },
+    { name: 'Orthopedics', icon: Bone, data: doctorData.orthopedics },
+    { name: 'Dentistry', icon: Smile, data: doctorData.dentistry },
   ];
 
   return (
@@ -156,8 +160,8 @@ export default function DoctorsPage() {
         <h1 className="text-3xl font-bold">Find a Doctor</h1>
         <Button variant="outline">Advanced Search</Button>
       </div>
-      <Tabs defaultValue="Cardiology">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="Cardiology" className="overflow-x-auto">
+        <TabsList className="grid w-full grid-cols-7">
           {specialties.map((spec) => (
             <TabsTrigger key={spec.name} value={spec.name}>
               <spec.icon className="mr-2 h-4 w-4" />

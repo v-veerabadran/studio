@@ -38,6 +38,19 @@ export const hospitalData = {
     nephrology: [
         { id: 6, name: "Kidney Care Associates", location: "Metropolis", rating: 4.7, specialty: "Nephrology", emergency: false, imageUrl: "https://picsum.photos/seed/hospital6/600/400", imageHint: "medical building", pros: ["Focus on chronic kidney disease", "Holistic approach"], cons: ["By referral only"] },
         { id: 7, name: "St. Jude's Renal Unit", location: "Metropolis", rating: 4.4, specialty: "Nephrology", emergency: true, imageUrl: "https://picsum.photos/seed/hospital7/600/400", imageHint: "hospital entrance", pros: ["Advanced dialysis services", "Tied to a major hospital"], cons: ["Can feel impersonal"] },
+    ],
+    neurology: [
+        { id: 8, name: "Metro Neurosciences", location: "Metropolis", rating: 4.8, specialty: "Neurology", emergency: true, imageUrl: "https://picsum.photos/seed/hospital8/600/400", imageHint: "modern clinic", pros: ["Comprehensive stroke center", "Research-driven"], cons: ["High demand for specialists"] },
+        { id: 9, name: "Brain & Spine Center", location: "Uptown", rating: 4.6, specialty: "Neurology", emergency: false, imageUrl: "https://picsum.photos/seed/hospital9/600/400", imageHint: "specialty hospital", pros: ["Specializes in spine disorders", "Integrative therapies"], cons: ["Limited insurance network"] },
+    ],
+    dermatology: [
+        { id: 10, name: "The Skin Institute", location: "Downtown", rating: 4.9, specialty: "Dermatology", emergency: false, imageUrl: "https://picsum.photos/seed/hospital10/600/400", imageHint: "modern building", pros: ["Cosmetic & medical services", "State-of-the-art equipment"], cons: ["Mostly private pay"] },
+    ],
+    orthopedics: [
+        { id: 11, name: "Joint & Bone Clinic", location: "Suburbia", rating: 4.7, specialty: "Orthopedics", emergency: true, imageUrl: "https://picsum.photos/seed/hospital11/600/400", imageHint: "clinic exterior", pros: ["Top sports medicine docs", "On-site physical therapy"], cons: ["Busy on weekends"] },
+    ],
+    dentistry: [
+        { id: 12, name: "Bright Smile Dental", location: "City Center", rating: 4.9, specialty: "Dentistry", emergency: true, imageUrl: "https://picsum.photos/seed/hospital12/600/400", imageHint: "dental office", pros: ["Family & cosmetic dentistry", "Open on Saturdays"], cons: ["Can be noisy"] },
     ]
 }
 
@@ -51,5 +64,17 @@ export const doctorData = {
     ],
     nephrology: [
          { id: 4, name: "Dr. Kenji Tanaka", specialty: "Nephrology", hospital: "Kidney Care Associates", rating: 4.6, experience: 18, boardCertified: true, imageUrl: "https://picsum.photos/seed/doc4/400/400", imageHint: "asian doctor", pros: ["Vast experience", "Focus on patient education"], cons: ["Clinic has limited parking"] },
+    ],
+    neurology: [
+        { id: 5, name: "Dr. Alistair Finch", specialty: "Neurology", hospital: "Metro Neurosciences", rating: 4.8, experience: 20, boardCertified: true, imageUrl: "https://picsum.photos/seed/doc5/400/400", imageHint: "senior doctor", pros: ["Expert in epilepsy", "Calm and reassuring"], cons: ["Long waiting list"] },
+    ],
+    dermatology: [
+        { id: 6, name: "Dr. Chloe Bennett", specialty: "Dermatology", hospital: "The Skin Institute", rating: 4.9, experience: 8, boardCertified: true, imageUrl: "https://picsum.photos/seed/doc6/400/400", imageHint: "professional woman", pros: ["Excellent cosmetic results", "Friendly and approachable"], cons: ["High consultation fee"] },
+    ],
+    orthopedics: [
+        { id: 7, name: "Dr. Liam Gallagher", specialty: "Orthopedics", hospital: "Joint & Bone Clinic", rating: 4.7, experience: 14, boardCertified: true, imageUrl: "https://picsum.photos/seed/doc7/400/400", imageHint: "friendly man", pros: ["Top knee surgeon", "Works with athletes"], cons: ["Surgical-first approach"] },
+    ],
+    dentistry: [
+        { id: 8, name: "Dr. Isabella Chen", specialty: "Dentistry", hospital: "Bright Smile Dental", rating: 4.9, experience: 11, boardCertified: true, imageUrl: "https://picsum.photos/seed/doc8/400/400", imageHint: "smiling woman", pros: ["Painless procedures", "Great with kids"], cons: ["Limited evening appointments"] },
     ]
 };

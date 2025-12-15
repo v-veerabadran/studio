@@ -19,7 +19,7 @@ import {
   SheetDescription
 } from '@/components/ui/sheet';
 import { hospitalData, type Hospital } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed } from 'lucide-react';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 
@@ -146,6 +146,10 @@ export default function HospitalsPage() {
     { name: 'Cardiology', icon: HeartPulse, data: hospitalData.cardiology },
     { name: 'Pulmonology', icon: Wind, data: hospitalData.pulmonology },
     { name: 'Nephrology', icon: Filter, data: hospitalData.nephrology },
+    { name: 'Neurology', icon: Brain, data: hospitalData.neurology },
+    { name: 'Dermatology', icon: PersonStanding, data: hospitalData.dermatology },
+    { name: 'Orthopedics', icon: Bone, data: hospitalData.orthopedics },
+    { name: 'Dentistry', icon: Smile, data: hospitalData.dentistry },
   ];
 
   return (
@@ -154,8 +158,8 @@ export default function HospitalsPage() {
         <h1 className="text-3xl font-bold">Find a Hospital</h1>
         <Button variant="outline">View on Map</Button>
       </div>
-      <Tabs defaultValue="Cardiology">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="Cardiology" className="overflow-x-auto">
+        <TabsList className="grid w-full grid-cols-7">
           {specialties.map((spec) => (
             <TabsTrigger key={spec.name} value={spec.name}>
               <spec.icon className="mr-2 h-4 w-4" />

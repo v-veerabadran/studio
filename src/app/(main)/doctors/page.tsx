@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,12 +18,14 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription
+  SheetDescription,
+  SheetFooter,
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { doctorData, type Doctor, allDoctors } from '@/lib/data';
 import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, BookOpen, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 function DoctorsPageContent() {
   const searchParams = useSearchParams();
@@ -157,6 +160,11 @@ function DoctorsPageContent() {
                         </ul>
                     </div>
                 </div>
+                <SheetFooter>
+                    <Button asChild className="w-full">
+                        <Link href={`/book-appointment?doctorId=${doctor.id}`}>Book an Appointment</Link>
+                    </Button>
+                </SheetFooter>
             </SheetContent>
         </Sheet>
     )
@@ -210,7 +218,7 @@ function DoctorsPageContent() {
                       </div>
                     </CardContent>
                   </div>
-                  <CardContent>
+                  <CardFooter>
                     <Button
                       className="w-full"
                       variant={selected.find(s => s.id === doctor.id) ? 'default' : 'outline'}
@@ -219,7 +227,7 @@ function DoctorsPageContent() {
                     >
                       {selected.find(s => s.id === doctor.id) ? 'Selected' : 'Compare'}
                     </Button>
-                  </CardContent>
+                  </CardFooter>
                 </Card>
               ))}
             </div>

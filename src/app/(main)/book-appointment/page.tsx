@@ -4,10 +4,8 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { allDoctors, type Doctor, allHospitals, type Hospital } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,13 +13,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Building, Video, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
+import type { Dayjs } from 'dayjs';
 
-const availableTimes = [
-    "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
-    "11:00 AM", "11:30 AM", "01:00 PM", "01:30 PM",
-    "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM"
-];
 
 function BookAppointmentPageContent() {
     const searchParams = useSearchParams();
@@ -32,8 +28,7 @@ function BookAppointmentPageContent() {
     const [doctorsList, setDoctorsList] = useState<Doctor[]>(allDoctors);
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | undefined>();
     const [doctor, setDoctor] = useState<Doctor | null>(null);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-    const [selectedTime, setSelectedTime] = useState<string | undefined>();
+    const [selectedDateTime, setSelectedDateTime] = useState<Dayjs | null>(null);
     const [reasonForVisit, setReasonForVisit] = useState("");
     const [visitType, setVisitType] = useState<"in-person" | "virtual">("in-person");
 
@@ -69,13 +64,8 @@ function BookAppointmentPageContent() {
         setSelectedDoctorId(doctorId);
     }
     
-    const handleDateSelect = (date: Date | undefined) => {
-        setSelectedDate(date);
-        setSelectedTime(undefined); // Reset time when date changes
-    }
-    
     const handleConfirmBooking = () => {
-         if (!doctor || !selectedDate || !selectedTime) {
+         if (!doctor || !selectedDateTime) {
             toast({
                 title: "Incomplete Information",
                 description: "Please select a doctor, date, and time.",
@@ -86,8 +76,8 @@ function BookAppointmentPageContent() {
 
         const query = new URLSearchParams({
             doctorId: doctor.id.toString(),
-            date: selectedDate.toISOString(),
-            time: selectedTime,
+            date: selectedDateTime.toISOString(),
+            time: selectedDateTime.format('hh:mm A'),
             reason: reasonForVisit,
             type: visitType
         }).toString();
@@ -101,8 +91,8 @@ function BookAppointmentPageContent() {
                 <h1 className="text-3xl font-bold">Book an Appointment</h1>
                 {hospital && <p className="text-muted-foreground mt-2">Booking for {hospital.name}</p>}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div className="space-y-8">
                     <Card>
                         <CardHeader>
                             <CardTitle>Appointment Details</CardTitle>
@@ -162,92 +152,27 @@ function BookAppointmentPageContent() {
                             </div>
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Select a Date & Time</CardTitle>
-                            <CardDescription>Choose an available date and time for your appointment.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="flex justify-center">
-                                <Calendar
-                                    mode="single"
-                                    selected={selectedDate}
-                                    onSelect={handleDateSelect}
-                                    className="p-0"
-                                    disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                                />
-                            </div>
-                            <div className="h-full">
-                                {selectedDate ? (
-                                    <div>
-                                        <h3 className="text-lg font-semibold mb-4 text-center md:text-left">
-                                            Available Slots for {format(selectedDate, "PPP")}
-                                        </h3>
-                                        <div className="grid grid-cols-3 gap-2">
-                                            {availableTimes.map(time => (
-                                                <Button 
-                                                    key={time}
-                                                    variant={selectedTime === time ? "default" : "outline"}
-                                                    onClick={() => setSelectedTime(time)}
-                                                >
-                                                    {time}
-                                                </Button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center h-full text-center p-8 border-2 border-dashed rounded-lg bg-muted/50">
-                                        <Clock className="h-12 w-12 text-muted-foreground" />
-                                        <p className="mt-4 text-muted-foreground">Select a date to see available times.</p>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
-                <div className="lg:col-span-1">
-                    <Card className="sticky top-24">
+                <div className="space-y-8">
+                    <Card>
                          <CardHeader>
-                            <CardTitle>Appointment Summary</CardTitle>
-                            <CardDescription>Review your details before proceeding.</CardDescription>
+                            <CardTitle>4. Select a Date & Time</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            {doctor ? (
-                                <div className="flex items-center gap-3">
-                                    <Avatar className="h-16 w-16">
-                                        <AvatarImage src={doctor.imageUrl} alt={doctor.name} data-ai-hint={doctor.imageHint} />
-                                        <AvatarFallback>{doctor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-bold">{doctor.name}</p>
-                                        <p className="text-sm text-muted-foreground">{doctor.specialty}</p>
-                                        <p className="text-xs text-muted-foreground">{doctor.hospital}</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <p className="text-sm text-muted-foreground">Please select a doctor.</p>
-                            )}
-
-                            {selectedDate && selectedTime ? (
-                                <div>
-                                    <p className="font-bold">{format(selectedDate, "PPP")}</p>
-                                    <p className="text-sm text-muted-foreground">{selectedTime}</p>
-                                </div>
-                            ) : (
-                                 <p className="text-sm text-muted-foreground">Please select a date and time.</p>
-                            )}
-                             <p className={cn("text-sm capitalize", visitType === 'in-person' ? 'flex items-center gap-2' : 'flex items-center gap-2')}>
-                                {visitType === 'in-person' ? <Building className="h-4 w-4" /> : <Video className="h-4 w-4" />}
-                                {visitType} Visit
-                            </p>
+                        <CardContent>
+                             <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <StaticDateTimePicker 
+                                  orientation="portrait" 
+                                  onChange={(newValue) => setSelectedDateTime(newValue)}
+                                  value={selectedDateTime}
+                                  ampm={true}
+                                  disablePast
+                                />
+                            </LocalizationProvider>
                         </CardContent>
-                        <CardFooter>
-                            <Button size="lg" className="w-full" onClick={handleConfirmBooking} disabled={!doctor || !selectedDate || !selectedTime}>
-                                Proceed to Payment
-                            </Button>
-                        </CardFooter>
                     </Card>
+                     <Button size="lg" className="w-full" onClick={handleConfirmBooking} disabled={!doctor || !selectedDateTime}>
+                        Proceed to Payment
+                    </Button>
                 </div>
             </div>
         </div>
@@ -261,5 +186,3 @@ export default function BookAppointmentPage() {
         </Suspense>
     )
 }
-
-    

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -26,6 +26,7 @@ import { Separator } from '@/components/ui/separator';
 
 function DoctorsPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [selected, setSelected] = useState<Doctor[]>([]);
   const [isComparing, setIsComparing] = useState(false);
   const [viewingDoctor, setViewingDoctor] = useState<Doctor | null>(null);
@@ -106,6 +107,15 @@ function DoctorsPageContent() {
     </Sheet>
   )
 
+  const handleCloseSheet = (open: boolean) => {
+      if (!open) {
+          setViewingDoctor(null);
+          // Clear view_doctor from url without navigating
+          const newUrl = window.location.pathname + '?' + searchParams.toString().replace(/&?view_doctor=\d+/, '');
+          window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+      }
+  }
+
   const DoctorDetailSheet = ({ doctor, onOpenChange }: { doctor: Doctor | null, onOpenChange: (open: boolean) => void }) => {
     if (!doctor) return null;
     return (
@@ -146,7 +156,7 @@ function DoctorsPageContent() {
                             {doctor.cons.map((con, index) => <li key={index}>{con}</li>)}
                         </ul>
                     </div>
-                    <Button className="w-full mt-4">
+                    <Button className="w-full mt-4" onClick={() => router.push(`/book-appointment?doctorId=${doctor.id}`)}>
                         <BookOpen className="mr-2 h-4 w-4"/>
                         Book an Appointment
                     </Button>
@@ -237,7 +247,7 @@ function DoctorsPageContent() {
         </div>
       )}
       <ComparisonSheet />
-      <DoctorDetailSheet doctor={viewingDoctor} onOpenChange={(open) => !open && setViewingDoctor(null)} />
+      <DoctorDetailSheet doctor={viewingDoctor} onOpenChange={handleCloseSheet} />
     </div>
   );
 }

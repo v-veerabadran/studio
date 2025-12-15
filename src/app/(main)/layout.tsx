@@ -26,6 +26,7 @@ import {
   Pill,
   Hospital,
   Users,
+  BookOpen,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
@@ -116,6 +117,17 @@ export default function MainLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <Link href="/book-appointment" passHref>
+                        <SidebarMenuButton
+                        isActive={pathname === '/book-appointment'}
+                        tooltip="Book Appointment"
+                        >
+                        <BookOpen />
+                        <span>Book Appointment</span>
+                        </SidebarMenuButton>
+                    </Link>
+                </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link href="/records" passHref>
                   <SidebarMenuButton

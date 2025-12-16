@@ -29,6 +29,7 @@ import {
   Users,
   BookOpen,
   CreditCard,
+  Plane,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
@@ -182,6 +183,17 @@ export default function MainLayout({
                   >
                     <Users />
                     <span>Doctors</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/medical-tourism" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/medical-tourism'}
+                    tooltip="Medical Tourism"
+                  >
+                    <Plane />
+                    <span>Medical Tourism</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

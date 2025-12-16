@@ -181,41 +181,56 @@ export default function PackageDetailPage() {
         </div>
 
         {isDiamondPackage && (
-            <Card className="mb-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5" /> Filter Options</CardTitle>
-                    <CardDescription>Find providers for this package in a specific location.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Select onValueChange={handleCountryChange} value={selectedCountry}>
-                            <SelectTrigger id="country">
-                                <SelectValue placeholder="Select a country" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {countries.map(country => (
-                                    <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="state">State / Province</Label>
-                        <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
-                            <SelectTrigger id="state">
-                                <SelectValue placeholder="Select a state" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {currentStates.map(state => (
-                                    <SelectItem key={state} value={state}>{state}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button>Apply Filters</Button>
-                </CardContent>
-            </Card>
+            <div className="mb-8">
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="outline">
+                            <Filter className="mr-2 h-4 w-4" />
+                            Filter Options
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Filter by Location</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Find providers for this package in a specific location.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="space-y-4 py-4">
+                           <div className="space-y-2">
+                                <Label htmlFor="country">Country</Label>
+                                <Select onValueChange={handleCountryChange} value={selectedCountry}>
+                                    <SelectTrigger id="country">
+                                        <SelectValue placeholder="Select a country" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {countries.map(country => (
+                                            <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="state">State / Province</Label>
+                                <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
+                                    <SelectTrigger id="state">
+                                        <SelectValue placeholder="Select a state" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {currentStates.map(state => (
+                                            <SelectItem key={state} value={state}>{state}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction>Apply Filters</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

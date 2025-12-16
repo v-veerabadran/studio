@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2 } from 'lucide-react';
+import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -80,7 +80,7 @@ export default function PackageDetailPage() {
   }
 
   return (
-    <div>
+    <div className="print:hidden">
       <section className="relative h-[350px] w-full">
         <Image
           src={pkg.imageUrl}
@@ -200,7 +200,7 @@ export default function PackageDetailPage() {
                            Generate Visa Letter
                         </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="max-w-2xl">
+                    <AlertDialogContent className="max-w-2xl print:hidden">
                          <AlertDialogHeader>
                             <AlertDialogTitle>Generate Visa Support Letter</AlertDialogTitle>
                             <AlertDialogDescription>
@@ -210,12 +210,10 @@ export default function PackageDetailPage() {
 
                         {generatedLetter ? (
                             <div className="space-y-4">
-                                <p className="text-sm text-muted-foreground">Your letter has been generated. You can copy it below.</p>
-                                <Textarea readOnly value={generatedLetter} className="h-64 text-xs bg-muted" />
-                                <Button onClick={() => {
-                                    navigator.clipboard.writeText(generatedLetter);
-                                    toast({ title: "Copied!", description: "The letter has been copied to your clipboard." });
-                                }}>Copy Letter</Button>
+                                <p className="text-sm text-muted-foreground">Your letter has been generated. You can now print it or save it as a PDF.</p>
+                                <div id="visa-letter-content" className="prose prose-sm max-w-none h-64 overflow-y-auto rounded-md border p-4 bg-muted whitespace-pre-wrap font-sans">
+                                    {generatedLetter}
+                                </div>
                             </div>
                         ) : (
                              <div className="space-y-4">
@@ -238,7 +236,13 @@ export default function PackageDetailPage() {
                        
                         <AlertDialogFooter>
                              {generatedLetter ? (
-                                <AlertDialogCancel>Close</AlertDialogCancel>
+                                <>
+                                    <AlertDialogCancel>Close</AlertDialogCancel>
+                                    <Button onClick={() => window.print()}>
+                                        <Printer className="mr-2 h-4 w-4" />
+                                        Print / Save as PDF
+                                    </Button>
+                                </>
                             ) : (
                                 <>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -266,8 +270,13 @@ export default function PackageDetailPage() {
           </div>
         </div>
       </div>
+      <div id="printable-visa-letter" className="hidden print:block p-8 font-serif">
+        <h1 className="text-2xl font-bold mb-4">{hospital.name}</h1>
+        <p className="mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <div className="whitespace-pre-wrap text-base">
+            {generatedLetter}
+        </div>
+      </div>
     </div>
   );
 }
-
-    

@@ -85,3 +85,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+    @media print {
+        .print\:hidden {
+            display: none;
+        }
+        .print\:block {
+            display: block;
+        }
+        body {
+            background-color: white;
+        }
+    }
+}

@@ -10,7 +10,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const GenerateVisaLetterInputSchema = z.object({
+const GenerateVisaLetterInputSchema = z.object({
     patientName: z.string().describe("The full name of the patient as it appears on their passport."),
     patientCountry: z.string().describe("The patient's country of citizenship."),
     passportNumber: z.string().describe("The patient's passport number."),
@@ -23,20 +23,24 @@ export const GenerateVisaLetterInputSchema = z.object({
 });
 export type GenerateVisaLetterInput = z.infer<typeof GenerateVisaLetterInputSchema>;
 
-export const GenerateVisaLetterOutputSchema = z.object({
+const GenerateVisaLetterOutputSchema = z.object({
     visaLetter: z.string().describe("The full text of the generated medical visa support letter."),
 });
 export type GenerateVisaLetterOutput = z.infer<typeof GenerateVisaLetterOutputSchema>;
 
-export async function generateVisaLetter(input: GenerateVisaLetterInput): Promise<GenerateVisaLetterOutput> {
-    return generateVisaLetterFlow(input);
-}
 
-const prompt = ai.definePrompt({
-    name: 'generateVisaLetterPrompt',
-    input: { schema: GenerateVisaLetterInputSchema },
-    output: { schema: GenerateVisaLetterOutputSchema },
-    prompt: `You are an administrative assistant at a world-class hospital in India. Your task is to draft a formal and professional medical visa invitation letter for an international patient.
+const generateVisaLetterFlow = ai.defineFlow(
+    {
+        name: 'generateVisaLetterFlow',
+        inputSchema: GenerateVisaLetterInputSchema,
+        outputSchema: GenerateVisaLetterOutputSchema,
+    },
+    async (input) => {
+        const prompt = ai.definePrompt({
+            name: 'generateVisaLetterPrompt',
+            input: { schema: GenerateVisaLetterInputSchema },
+            output: { schema: GenerateVisaLetterOutputSchema },
+            prompt: `You are an administrative assistant at a world-class hospital in India. Your task is to draft a formal and professional medical visa invitation letter for an international patient.
 
 The letter should be addressed to the respective embassy or consulate of the patient's country. It must be clear, concise, and contain all necessary information to support the patient's medical visa application.
 
@@ -68,18 +72,14 @@ Use the following information to draft the letter. Ensure the tone is formal and
 8.  Conclude with a professional closing and provide the hospital's name and the surgeon's name as the contacts.
 
 Draft the letter now.`,
-});
+        });
 
-const generateVisaLetterFlow = ai.defineFlow(
-    {
-        name: 'generateVisaLetterFlow',
-        inputSchema: GenerateVisaLetterInputSchema,
-        outputSchema: GenerateVisaLetterOutputSchema,
-    },
-    async (input) => {
         const { output } = await prompt(input);
         return output!;
     }
 );
 
-    
+
+export async function generateVisaLetter(input: GenerateVisaLetterInput): Promise<GenerateVisaLetterOutput> {
+    return generateVisaLetterFlow(input);
+}

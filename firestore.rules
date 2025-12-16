@@ -95,7 +95,8 @@ service cloud.firestore {
      * @path /hospitals/{hospitalId}
      */
     match /hospitals/{hospitalId} {
-      allow read: if isSignedIn();
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
       allow write: if false; 
     }
 
@@ -104,7 +105,8 @@ service cloud.firestore {
      * @path /doctors/{doctorId}
      */
     match /doctors/{doctorId} {
-      allow read: if isSignedIn();
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
       allow write: if false;
     }
   }

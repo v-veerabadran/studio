@@ -5,9 +5,9 @@ import { useParams, notFound } from 'next/navigation';
 import { packages, allHospitals, allDoctors } from '@/lib/data';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer } from 'lucide-react';
+import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -18,7 +18,13 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+const countries = [
+    { name: 'United States', code: 'US', states: ['California', 'New York', 'Texas', 'Florida'] },
+    { name: 'Canada', code: 'CA', states: ['Ontario', 'Quebec', 'British Columbia', 'Alberta'] },
+    { name: 'United Kingdom', code: 'GB', states: ['England', 'Scotland', 'Wales', 'Northern Ireland'] },
+];
 
 export default function PackageDetailPage() {
   const params = useParams();
@@ -30,6 +36,16 @@ export default function PackageDetailPage() {
   const [generatedLetter, setGeneratedLetter] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+  const [selectedState, setSelectedState] = useState<string>('');
+  
+  const handleCountryChange = (countryCode: string) => {
+      setSelectedCountry(countryCode);
+      setSelectedState(''); // Reset state when country changes
+  }
+
+  const currentStates = countries.find(c => c.code === selectedCountry)?.states || [];
+
   const [formState, setFormState] = useState({
     patientName: '',
     patientCountry: '',
@@ -45,6 +61,9 @@ export default function PackageDetailPage() {
   if (!pkg) {
     notFound();
   }
+  
+  // A check to see if we are on the Diamond Package page to show the filters.
+  const isDiamondPackage = pkg.title === 'Comprehensive Cardiac Care Package';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -113,6 +132,44 @@ export default function PackageDetailPage() {
                 <p className="text-lg text-white/90">{pkg.description}</p>
             </div>
         </div>
+
+        {isDiamondPackage && (
+            <Card className="mb-8">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5" /> Filter Options</CardTitle>
+                    <CardDescription>Find providers for this package in a specific location.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Select onValueChange={handleCountryChange} value={selectedCountry}>
+                            <SelectTrigger id="country">
+                                <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {countries.map(country => (
+                                    <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="state">State / Province</Label>
+                        <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
+                            <SelectTrigger id="state">
+                                <SelectValue placeholder="Select a state" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {currentStates.map(state => (
+                                    <SelectItem key={state} value={state}>{state}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button>Apply Filters</Button>
+                </CardContent>
+            </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
@@ -274,3 +331,5 @@ export default function PackageDetailPage() {
     </>
   );
 }
+
+    

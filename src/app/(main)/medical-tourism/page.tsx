@@ -14,7 +14,6 @@ import { FileText, Loader2, Printer, Home, Plane, BedDouble, HospitalIcon, Brief
 import { useState } from 'react';
 import {
     AlertDialog,
-    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
@@ -27,8 +26,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
-import { cn } from '@/lib/utils';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { packages } from '@/lib/data';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -124,15 +121,14 @@ export default function MedicalTourismPage() {
     <div className="container py-8">
         <h1 className="text-3xl font-bold mb-8">Medical Tourism</h1>
         
-         <Tabs defaultValue="visa-travel">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="visa-travel">Visa & Travel</TabsTrigger>
-                <TabsTrigger value="packages">Treatment Packages</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="visa-travel">
-                 <div className="flex justify-end items-center mb-8">
-                    <AlertDialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+        <div className="space-y-8">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Visa & Travel Support</CardTitle>
+                        <CardDescription>All your logistical needs, managed in one place.</CardDescription>
+                    </div>
+                     <AlertDialog open={isDialogOpen} onOpenChange={handleOpenChange}>
                         <AlertDialogTrigger asChild>
                             <Button>
                                 <FileText className="mr-2 h-4 w-4" />
@@ -224,69 +220,68 @@ export default function MedicalTourismPage() {
                             )}
                         </AlertDialogContent>
                     </AlertDialog>
-                </div>
-                
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Your Travel Itinerary</CardTitle>
-                        <CardDescription>A step-by-step overview of your managed travel arrangements.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2 md:pl-0 md:before:left-1/2 md:before:top-[24px] md:before:h-px md:before:w-full md:before:translate-x-0 md:before:-translate-y-1/2">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-y-8 md:gap-x-8">
-                                {travelSteps.map((step, index) => (
-                                    <div key={index} className="relative flex md:flex-col items-start md:items-center gap-6 md:gap-2">
-                                        <div className="relative z-10">
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
-                                                <step.icon className="h-6 w-6" />
-                                            </div>
-                                        </div>
-                                        <div className="pt-2 md:pt-0 md:text-center">
-                                            <h4 className="font-semibold">{step.title}</h4>
-                                            <p className="text-sm text-muted-foreground">{step.description}</p>
+                </CardHeader>
+                <CardContent>
+                    <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2 md:pl-0 md:before:left-1/2 md:before:top-[24px] md:before:h-px md:before:w-full md:before:translate-x-0 md:before:-translate-y-1/2">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-y-8 md:gap-x-8">
+                            {travelSteps.map((step, index) => (
+                                <div key={index} className="relative flex md:flex-col items-start md:items-center gap-6 md:gap-2">
+                                    <div className="relative z-10">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
+                                            <step.icon className="h-6 w-6" />
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-            <TabsContent value="packages">
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {packages.map((pkg) => (
-                    <Card key={pkg.id} className="flex flex-col">
-                        <div className="relative h-48 w-full">
-                        <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
-                        </div>
-                        <CardHeader>
-                        <CardTitle>{pkg.title}</CardTitle>
-                        <CardDescription className="flex items-center gap-2 pt-1"><BriefcaseMedical className="h-4 w-4" />{pkg.price}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            {pkg.highlights.slice(0, 2).map((highlight, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                                <span className="text-primary mt-1">&#10003;</span>
-                                <span>{highlight}</span>
-                            </li>
+                                    <div className="pt-2 md:pt-0 md:text-center">
+                                        <h4 className="font-semibold">{step.title}</h4>
+                                        <p className="text-sm text-muted-foreground">{step.description}</p>
+                                    </div>
+                                </div>
                             ))}
-                        </ul>
-                        </CardContent>
-                        <CardFooter>
-                        <Button asChild className="w-full">
-                            <Link href={`/medical-tourism/${pkg.id}`}>
-                                Learn More & Inquire
-                                <ExternalLink className="ml-2 h-4 w-4" />
-                            </Link>
-                        </Button>
-                        </CardFooter>
-                    </Card>
-                    ))}
-                </div>
-            </TabsContent>
-        </Tabs>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Explore Our All-Inclusive Packages</CardTitle>
+                    <CardDescription>Curated packages for a seamless medical journey.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {packages.map((pkg) => (
+                        <Card key={pkg.id} className="flex flex-col">
+                            <div className="relative h-48 w-full">
+                            <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
+                            </div>
+                            <CardHeader>
+                            <CardTitle>{pkg.title}</CardTitle>
+                            <CardDescription className="flex items-center gap-2 pt-1"><BriefcaseMedical className="h-4 w-4" />{pkg.price}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                            <ul className="space-y-2 text-sm text-muted-foreground">
+                                {pkg.highlights.slice(0, 2).map((highlight, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                    <span className="text-primary mt-1">&#10003;</span>
+                                    <span>{highlight}</span>
+                                </li>
+                                ))}
+                            </ul>
+                            </CardContent>
+                            <CardFooter>
+                            <Button asChild className="w-full">
+                                <Link href={`/medical-tourism/${pkg.id}`}>
+                                    Learn More & Inquire
+                                    <ExternalLink className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
+                            </CardFooter>
+                        </Card>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
 
     </div>
      <div id="printable-visa-letter" className="hidden print:block p-8 font-serif">

@@ -234,7 +234,7 @@ export default function PackageDetailPage() {
                                 <Slider
                                     id="price-range"
                                     value={priceRange}
-                                    min={10000} max={50000}
+                                    min={15000} max={50000}
                                     step={1000}
                                     onValueChange={(value) => setPriceRange(value as [number, number])}
                                 />
@@ -247,6 +247,7 @@ export default function PackageDetailPage() {
                                             value={priceRange[0]}
                                             onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
                                             step={1000}
+                                            min="15000"
                                         />
                                     </div>
                                     <div className="flex-1 space-y-1">

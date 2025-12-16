@@ -13,8 +13,8 @@ const packages = [
     name: 'Diamond Package',
     price: '$25,000',
     description: 'The ultimate, all-inclusive experience with unparalleled luxury and personal care.',
-    imageUrl: 'https://picsum.photos/seed/diamond-package/600/400',
-    imageHint: 'luxury suite',
+    imageUrl: 'https://picsum.photos/seed/diamond-suite/600/400',
+    imageHint: 'luxury hospital suite',
     features: [
       'VIP hospital suite',
       'Dedicated 24/7 personal concierge',
@@ -28,8 +28,8 @@ const packages = [
     name: 'Platinum Package',
     price: '$18,000',
     description: 'A premium package offering superior comfort and comprehensive medical services.',
-    imageUrl: 'https://picsum.photos/seed/platinum-package/600/400',
-    imageHint: 'private room',
+    imageUrl: 'https://picsum.photos/seed/platinum-room/600/400',
+    imageHint: 'modern private hospital',
     features: [
       'Private hospital room',
       'Personal care coordinator',
@@ -42,8 +42,8 @@ const packages = [
     name: 'Gold Package',
     price: '$12,000',
     description: 'Our most popular package, balancing excellent care with great value.',
-    imageUrl: 'https://picsum.photos/seed/gold-package/600/400',
-    imageHint: 'hospital room',
+    imageUrl: 'https://picsum.photos/seed/gold-clinic/600/400',
+    imageHint: 'modern clinic',
     features: [
       'Semi-private hospital room',
       'Shared care coordinator',
@@ -56,8 +56,8 @@ const packages = [
     name: 'Silver Package',
     price: '$8,000',
     description: 'An essential care package covering all fundamental medical and travel needs.',
-    imageUrl: 'https://picsum.photos/seed/silver-package/600/400',
-    imageHint: 'clean room',
+    imageUrl: 'https://picsum.photos/seed/silver-ward/600/400',
+    imageHint: 'clean hospital ward',
     features: [
       'General ward accommodation',
       'On-call support staff',
@@ -80,7 +80,7 @@ export default function MedicalTourismPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {packages.map(pkg => (
-                    <Card key={pkg.id} className="flex flex-col">
+                    <Card key={pkg.id} className="flex flex-col transition-all hover:shadow-xl hover:-translate-y-1">
                         <div className="relative h-48 w-full">
                             <Image src={pkg.imageUrl} alt={pkg.name} fill objectFit="cover" className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
                         </div>

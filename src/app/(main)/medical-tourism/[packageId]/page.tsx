@@ -1,13 +1,13 @@
 
 'use client';
 
-import { useParams, notFound } from 'next/navigation';
+import { useParams, notFound, useRouter } from 'next/navigation';
 import { packages, allHospitals, allDoctors, hospitalData, type Hospital } from '@/lib/data';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter, Info, Star } from 'lucide-react';
+import { ArrowLeft, CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter, Info, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -30,6 +30,7 @@ const countries = [
 
 export default function PackageDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const packageId = params.packageId;
   const pkg = packages.find((p) => p.id.toString() === packageId);
 
@@ -40,7 +41,12 @@ export default function PackageDetailPage() {
   
   const relevantHospitals = useMemo(() => {
     if (!pkg) return [];
-    return hospitalData[pkg.hospital.specialty.toLowerCase() as keyof typeof hospitalData] || [];
+    const specialty = pkg.hospital.specialty.toLowerCase();
+    const key = specialty as keyof typeof hospitalData;
+    if (key in hospitalData) {
+      return hospitalData[key] || [];
+    }
+    return [];
   }, [pkg]);
   
   const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>(relevantHospitals);
@@ -169,6 +175,13 @@ export default function PackageDetailPage() {
   return (
     <>
     <div className="container py-8">
+        <div className="mb-6">
+            <Button variant="outline" onClick={() => router.push('/medical-tourism')}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to All Packages
+            </Button>
+        </div>
+
         {/* Header */}
         <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden mb-8">
             <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" data-ai-hint={pkg.imageHint} />
@@ -380,5 +393,3 @@ export default function PackageDetailPage() {
     </>
   );
 }
-
-    

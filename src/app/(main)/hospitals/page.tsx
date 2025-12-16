@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -21,17 +21,39 @@ import {
   SheetDescription,
   SheetFooter
 } from '@/components/ui/sheet';
-import { hospitalData, type Hospital, doctorData, type Doctor } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, LocateFixed, Brain, PersonStanding, Bone, Smile, Map, UserMd } from 'lucide-react';
+import type { Hospital, Doctor } from '@/lib/types';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, Brain, PersonStanding, Bone, Smile, Map } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Users } from 'lucide-react';
+import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function HospitalsPage() {
+  const { firestore } = useFirebase();
   const [selected, setSelected] = useState<Hospital[]>([]);
   const [isComparing, setIsComparing] = useState(false);
   const [viewingHospital, setViewingHospital] = useState<Hospital | null>(null);
+
+  const hospitalsCollection = useMemoFirebase(() => collection(firestore, 'hospitals'), [firestore]);
+  const doctorsCollection = useMemoFirebase(() => collection(firestore, 'doctors'), [firestore]);
+
+  const { data: allHospitals, isLoading: isLoadingHospitals } = useCollection<Hospital>(hospitalsCollection);
+  const { data: allDoctors, isLoading: isLoadingDoctors } = useCollection<Doctor>(doctorsCollection);
+
+  const hospitalData = useMemo(() => {
+    if (!allHospitals) return {};
+    return allHospitals.reduce((acc, hospital) => {
+      const specialty = hospital.specialty;
+      if (!acc[specialty.toLowerCase()]) {
+        acc[specialty.toLowerCase()] = [];
+      }
+      acc[specialty.toLowerCase()].push(hospital);
+      return acc;
+    }, {} as Record<string, Hospital[]>);
+  }, [allHospitals]);
 
   const handleSelect = (e: React.MouseEvent, item: Hospital) => {
     e.stopPropagation();
@@ -101,7 +123,7 @@ export default function HospitalsPage() {
   const HospitalDetailSheet = ({ hospital, onOpenChange }: { hospital: Hospital | null, onOpenChange: (open: boolean) => void }) => {
     if (!hospital) return null;
     
-    const affiliatedDoctors = Object.values(doctorData).flat().filter(doctor => doctor.hospital === hospital.name);
+    const affiliatedDoctors = allDoctors?.filter(doctor => doctor.hospital === hospital.name) || [];
 
     return (
         <Sheet open={!!hospital} onOpenChange={onOpenChange}>
@@ -150,7 +172,11 @@ export default function HospitalsPage() {
                     <Separator />
                      <div>
                         <h4 className="font-semibold mb-2 flex items-center"><Users className="h-4 w-4 mr-2" /> Affiliated Doctors</h4>
-                        {affiliatedDoctors.length > 0 ? (
+                        {isLoadingDoctors ? (
+                            <div className="space-y-2 mt-2">
+                                {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                            </div>
+                        ) : affiliatedDoctors.length > 0 ? (
                             <div className="space-y-2 mt-2">
                                 {affiliatedDoctors.map(doctor => (
                                      <Link key={doctor.id} href={`/doctors?view_doctor=${doctor.id}`} passHref>
@@ -183,13 +209,13 @@ export default function HospitalsPage() {
   }
 
   const specialties = [
-    { name: 'Cardiology', icon: HeartPulse, data: hospitalData.cardiology },
-    { name: 'Pulmonology', icon: Wind, data: hospitalData.pulmonology },
-    { name: 'Nephrology', icon: Filter, data: hospitalData.nephrology },
-    { name: 'Neurology', icon: Brain, data: hospitalData.neurology },
-    { name: 'Dermatology', icon: PersonStanding, data: hospitalData.dermatology },
-    { name: 'Orthopedics', icon: Bone, data: hospitalData.orthopedics },
-    { name: 'Dentistry', icon: Smile, data: hospitalData.dentistry },
+    { name: 'Cardiology', icon: HeartPulse },
+    { name: 'Pulmonology', icon: Wind },
+    { name: 'Nephrology', icon: Filter },
+    { name: 'Neurology', icon: Brain },
+    { name: 'Dermatology', icon: PersonStanding },
+    { name: 'Orthopedics', icon: Bone },
+    { name: 'Dentistry', icon: Smile },
   ];
 
   return (
@@ -210,7 +236,24 @@ export default function HospitalsPage() {
         {specialties.map((spec) => (
           <TabsContent key={spec.name} value={spec.name}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-              {spec.data.map((hospital) => (
+              {isLoadingHospitals ? (
+                [...Array(3)].map((_, i) => (
+                  <Card key={i}>
+                    <CardHeader>
+                      <Skeleton className="h-40 w-full mb-4" />
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-6 w-1/4 mb-4" />
+                    </CardContent>
+                    <CardFooter className="flex gap-2">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-10" />
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : hospitalData[spec.name.toLowerCase()]?.map((hospital) => (
                 <Card key={hospital.id} className="flex flex-col">
                   <div className="flex-grow cursor-pointer" onClick={() => setViewingHospital(hospital)}>
                     <CardHeader>
@@ -245,6 +288,9 @@ export default function HospitalsPage() {
                 </Card>
               ))}
             </div>
+             {!isLoadingHospitals && !hospitalData[spec.name.toLowerCase()] && (
+              <div className="text-center py-12 text-muted-foreground">No hospitals found for this specialty.</div>
+            )}
           </TabsContent>
         ))}
       </Tabs>

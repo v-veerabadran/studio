@@ -42,6 +42,92 @@
         "createdAt",
         "updatedAt"
       ]
+    },
+    "Hospital": {
+      "title": "Hospital",
+      "type": "object",
+      "description": "Represents a hospital's information.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "price": {
+          "type": "number"
+        },
+        "specialty": {
+          "type": "string"
+        },
+        "emergency": {
+          "type": "boolean"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "imageHint": {
+          "type": "string"
+        },
+        "pros": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Doctor": {
+      "title": "Doctor",
+      "type": "object",
+      "description": "Represents a doctor's information.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "specialty": {
+          "type": "string"
+        },
+        "hospital": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "experience": {
+          "type": "number"
+        },
+        "boardCertified": {
+          "type": "boolean"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "imageHint": {
+          "type": "string"
+        },
+        "pros": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "auth": {
@@ -64,6 +150,38 @@
             {
               "name": "userId",
               "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/hospitals/{hospitalId}",
+        "definition": {
+          "entityName": "Hospital",
+          "schema": {
+            "$ref": "#/backend/entities/Hospital"
+          },
+          "description": "Publicly accessible list of all hospitals.",
+          "params": [
+            {
+              "name": "hospitalId",
+              "description": "The unique identifier of the hospital."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/doctors/{doctorId}",
+        "definition": {
+          "entityName": "Doctor",
+          "schema": {
+            "$ref": "#/backend/entities/Doctor"
+          },
+          "description": "Publicly accessible list of all doctors.",
+          "params": [
+            {
+              "name": "doctorId",
+              "description": "The unique identifier of the doctor."
             }
           ]
         }

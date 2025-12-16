@@ -10,14 +10,14 @@
  * any other user.
  *
  * Data Structure:
- * All application data is organized under a top-level 'users' collection. Each
- * document in this collection represents a single user's profile, and the
- * document ID is the user's unique authentication UID.
- *   - /users/{userId}: A UserProfile document.
+ * - /users/{userId}: A UserProfile document.
+ * - /hospitals/{hospitalId}: Publicly readable hospital information.
+ * - /doctors/{doctorId}: Publicly readable doctor information.
  *
  * Key Security Decisions:
  * - Strict Ownership: All access control checks verify that the authenticated
  *   user's UID (`request.auth.uid`) matches the `userId` in the document path.
+ * - Public Data: Hospital and doctor data is public and read-only for all users.
  * - No User Enumeration: The ability to list all documents in the `/users`
  *   collection is explicitly disabled to protect user privacy and prevent data
  *   scraping. Users can only fetch their own profile document directly by its ID.
@@ -80,11 +80,6 @@ service cloud.firestore {
     /**
      * @description Controls access to a user's own profile document.
      * @path /users/{userId}
-     * @allow (get) A user (auth.uid='user123') to read their own profile at /users/user123.
-     * @allow (create) A new user (auth.uid='user123') to create their profile at /users/user123.
-     * @deny (list) Any user from listing all documents in the /users collection.
-     * @deny (update) A user (auth.uid='user456') from updating another user's profile at /users/user123.
-     * @principle Restricts access to a user's own data tree and prevents user enumeration.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
@@ -92,6 +87,24 @@ service cloud.firestore {
       allow create: if isOwner(userId) && hasValidProfileDataOnCreate(userId);
       allow update: if isExistingOwner(userId) && hasValidProfileDataOnUpdate();
       allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Publicly readable hospital data.
+     * @path /hospitals/{hospitalId}
+     */
+    match /hospitals/{hospitalId} {
+      allow get, list: if true;
+      allow create, update, delete: if false; // Read-only
+    }
+
+    /**
+     * @description Publicly readable doctor data.
+     * @path /doctors/{doctorId}
+     */
+    match /doctors/{doctorId} {
+      allow get, list: if true;
+      allow create, update, delete: if false; // Read-only
     }
   }
 }

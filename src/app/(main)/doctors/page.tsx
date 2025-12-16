@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Card,
@@ -22,27 +22,45 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { doctorData, type Doctor, allDoctors } from '@/lib/data';
-import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, BookOpen, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
+import type { Doctor } from '@/lib/types';
+import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function DoctorsPageContent() {
+  const { firestore } = useFirebase();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [selected, setSelected] = useState<Doctor[]>([]);
   const [isComparing, setIsComparing] = useState(false);
   const [viewingDoctor, setViewingDoctor] = useState<Doctor | null>(null);
 
+  const doctorsCollection = useMemoFirebase(() => collection(firestore, 'doctors'), [firestore]);
+  const { data: allDoctors, isLoading } = useCollection<Doctor>(doctorsCollection);
+
+  const doctorData = useMemo(() => {
+    if (!allDoctors) return {};
+    return allDoctors.reduce((acc, doctor) => {
+      const specialty = doctor.specialty;
+      if (!acc[specialty.toLowerCase()]) {
+        acc[specialty.toLowerCase()] = [];
+      }
+      acc[specialty.toLowerCase()].push(doctor);
+      return acc;
+    }, {} as Record<string, Doctor[]>);
+  }, [allDoctors]);
+
   useEffect(() => {
     const doctorId = searchParams.get('view_doctor');
-    if (doctorId) {
-      const doctor = allDoctors.find(d => d.id === parseInt(doctorId));
+    if (doctorId && allDoctors) {
+      const doctor = allDoctors.find(d => d.id === doctorId);
       if (doctor) {
         setViewingDoctor(doctor);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, allDoctors]);
 
   const handleSelect = (e: React.MouseEvent, item: Doctor) => {
     e.stopPropagation(); // Prevent card click from firing
@@ -113,7 +131,6 @@ function DoctorsPageContent() {
   const handleCloseSheet = (open: boolean) => {
       if (!open) {
           setViewingDoctor(null);
-          // Clear view_doctor from url without navigating
           const newUrl = window.location.pathname + '?' + searchParams.toString().replace(/&?view_doctor=\d+/, '');
           window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
       }
@@ -171,13 +188,13 @@ function DoctorsPageContent() {
   }
 
   const specialties = [
-    { name: 'Cardiology', icon: HeartPulse, data: doctorData.cardiology },
-    { name: 'Pulmonology', icon: Wind, data: doctorData.pulmonology },
-    { name: 'Nephrology', icon: Filter, data: doctorData.nephrology },
-    { name: 'Neurology', icon: Brain, data: doctorData.neurology },
-    { name: 'Dermatology', icon: PersonStanding, data: doctorData.dermatology },
-    { name: 'Orthopedics', icon: Bone, data: doctorData.orthopedics },
-    { name: 'Dentistry', icon: Smile, data: doctorData.dentistry },
+    { name: 'Cardiology', icon: HeartPulse },
+    { name: 'Pulmonology', icon: Wind },
+    { name: 'Nephrology', icon: Filter },
+    { name: 'Neurology', icon: Brain },
+    { name: 'Dermatology', icon: PersonStanding },
+    { name: 'Orthopedics', icon: Bone },
+    { name: 'Dentistry', icon: Smile },
   ];
 
   return (
@@ -198,7 +215,23 @@ function DoctorsPageContent() {
         {specialties.map((spec) => (
           <TabsContent key={spec.name} value={spec.name}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-              {spec.data.map((doctor) => (
+              {isLoading ? (
+                [...Array(3)].map((_, i) => (
+                  <Card key={i}>
+                    <CardHeader className="items-center">
+                      <Skeleton className="h-24 w-24 rounded-full mb-4" />
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-6 w-1/4 mx-auto mb-4" />
+                    </CardContent>
+                    <CardFooter>
+                      <Skeleton className="h-10 w-full" />
+                    </CardFooter>
+                  </Card>
+                ))
+              ): doctorData[spec.name.toLowerCase()]?.map((doctor) => (
                 <Card key={doctor.id} className="text-center flex flex-col">
                   <div className="flex-grow cursor-pointer" onClick={() => setViewingDoctor(doctor)}>
                     <CardHeader className="items-center">
@@ -231,6 +264,9 @@ function DoctorsPageContent() {
                 </Card>
               ))}
             </div>
+             {!isLoading && !doctorData[spec.name.toLowerCase()] && (
+              <div className="text-center py-12 text-muted-foreground">No doctors found for this specialty.</div>
+            )}
           </TabsContent>
         ))}
       </Tabs>

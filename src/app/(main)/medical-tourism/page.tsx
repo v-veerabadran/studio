@@ -29,12 +29,21 @@ import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
 import { packages } from '@/lib/data';
 import Image from 'next/image';
 import Link from 'next/link';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
+import dayjs, { type Dayjs } from 'dayjs';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 export default function MedicalTourismPage() {
     const { toast } = useToast();
+    const isMobile = useIsMobile();
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedLetter, setGeneratedLetter] = useState('');
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isVisaDialogOpen, setIsVisaDialogOpen] = useState(false);
+    const [isPickupDialogOpen, setIsPickupDialogOpen] = useState(false);
+    const [pickupDateTime, setPickupDateTime] = useState<Dayjs | null>(null);
 
     const [formState, setFormState] = useState({
         patientName: '',
@@ -49,10 +58,10 @@ export default function MedicalTourismPage() {
     });
 
     const travelSteps = [
-        { icon: Home, title: "Pickup from Home", description: "Coordinated transportation from your residence to the airport." },
-        { icon: Plane, title: "Flight Booking", description: "Your flight details and tickets will be managed and provided." },
-        { icon: BedDouble, title: "Hotel/Motel Drop-off", description: "Seamless transfer from the destination airport to your accommodation." },
-        { icon: HospitalIcon, title: "Hospital Transfer", description: "Scheduled pickup from your hotel for your hospital appointment." },
+        { id: 'pickup', icon: Home, title: "Pickup from Home", description: "Coordinated transportation from your residence to the airport." },
+        { id: 'flight', icon: Plane, title: "Flight Booking", description: "Your flight details and tickets will be managed and provided." },
+        { id: 'hotel', icon: BedDouble, title: "Hotel/Motel Drop-off", description: "Seamless transfer from the destination airport to your accommodation." },
+        { id: 'hospital', icon: HospitalIcon, title: "Hospital Transfer", description: "Scheduled pickup from your hotel for your hospital appointment." },
     ];
 
 
@@ -109,11 +118,27 @@ export default function MedicalTourismPage() {
         });
     }
 
-    const handleOpenChange = (open: boolean) => {
-        setIsDialogOpen(open);
+    const handleVisaDialogOpenChange = (open: boolean) => {
+        setIsVisaDialogOpen(open);
         if (!open) {
             handleNewLetter();
         }
+    }
+    
+    const handleConfirmPickup = () => {
+        if (!pickupDateTime) {
+            toast({
+                title: "No date selected",
+                description: "Please select a date and time for your pickup.",
+                variant: "destructive"
+            });
+            return;
+        }
+        toast({
+            title: "Pickup Scheduled!",
+            description: `Your pickup is confirmed for ${pickupDateTime.format("MMMM D, YYYY, h:mm A")}.`
+        });
+        setIsPickupDialogOpen(false);
     }
 
   return (
@@ -121,7 +146,7 @@ export default function MedicalTourismPage() {
     <div className="container py-8">
         <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">Medical Tourism</h1>
-            <AlertDialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+            <AlertDialog open={isVisaDialogOpen} onOpenChange={handleVisaDialogOpenChange}>
                 <AlertDialogTrigger asChild>
                     <Button>
                         <FileText className="mr-2 h-4 w-4" />
@@ -227,9 +252,38 @@ export default function MedicalTourismPage() {
                             {travelSteps.map((step, index) => (
                                 <div key={index} className="relative flex md:flex-col items-start md:items-center gap-6 md:gap-2">
                                     <div className="relative z-10">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
-                                            <step.icon className="h-6 w-6" />
-                                        </div>
+                                      <AlertDialog open={step.id === 'pickup' && isPickupDialogOpen} onOpenChange={step.id === 'pickup' ? setIsPickupDialogOpen : undefined}>
+                                            <AlertDialogTrigger asChild>
+                                                <button disabled={step.id !== 'pickup'} className="disabled:cursor-not-allowed group">
+                                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background group-enabled:hover:bg-primary/90 transition-colors">
+                                                        <step.icon className="h-6 w-6" />
+                                                    </div>
+                                                </button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Schedule Your Pickup</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Please select your preferred date and time for pickup from your residence.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <div className="py-4">
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <StaticDateTimePicker 
+                                                            orientation={isMobile ? "portrait" : "landscape"}
+                                                            value={pickupDateTime || dayjs()}
+                                                            onChange={(newValue) => setPickupDateTime(newValue)}
+                                                            ampm={true}
+                                                            disablePast
+                                                        />
+                                                    </LocalizationProvider>
+                                                </div>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={handleConfirmPickup}>Confirm</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                     <div className="pt-2 md:pt-0 md:text-center">
                                         <h4 className="font-semibold">{step.title}</h4>

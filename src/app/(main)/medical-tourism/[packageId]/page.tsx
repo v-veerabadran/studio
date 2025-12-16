@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter, Info } from 'lucide-react';
+import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter, Info, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +19,8 @@ import { useToast } from '@/hooks/use-toast';
 import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from '@/components/ui/slider';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const countries = [
     { name: 'United States', code: 'US', states: ['California', 'New York', 'Texas', 'Florida'] },
@@ -191,37 +193,65 @@ export default function PackageDetailPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Filter by Location</AlertDialogTitle>
+                            <AlertDialogTitle>Filter Options</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Find providers for this package in a specific location.
+                                Find providers for this package based on your preferences.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <div className="space-y-4 py-4">
-                           <div className="space-y-2">
-                                <Label htmlFor="country">Country</Label>
-                                <Select onValueChange={handleCountryChange} value={selectedCountry}>
-                                    <SelectTrigger id="country">
-                                        <SelectValue placeholder="Select a country" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {countries.map(country => (
-                                            <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                        <div className="space-y-6 py-4">
+                           <div className="space-y-4">
+                                <Label className="font-semibold">Location</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Select onValueChange={handleCountryChange} value={selectedCountry}>
+                                        <SelectTrigger id="country">
+                                            <SelectValue placeholder="Country" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {countries.map(country => (
+                                                <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
+                                        <SelectTrigger id="state">
+                                            <SelectValue placeholder="State/Province" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {currentStates.map(state => (
+                                                <SelectItem key={state} value={state}>{state}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="state">State / Province</Label>
-                                <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
-                                    <SelectTrigger id="state">
-                                        <SelectValue placeholder="Select a state" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {currentStates.map(state => (
-                                            <SelectItem key={state} value={state}>{state}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                             <div className="space-y-4">
+                                <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
+                                <Slider id="price-range" defaultValue={[25000]} min={15000} max={50000} step={1000} />
+                                <div className="flex justify-between text-sm text-muted-foreground">
+                                    <span>$15,000</span>
+                                    <span>$50,000+</span>
+                                </div>
+                            </div>
+                             <div className="space-y-4">
+                                <Label className="font-semibold">Rating</Label>
+                                <RadioGroup defaultValue="any" className="flex items-center gap-4">
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="any" id="r1" />
+                                        <Label htmlFor="r1">Any</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="4" id="r2" />
+                                        <Label htmlFor="r2" className="flex items-center">
+                                            4 <Star className="h-4 w-4 ml-1 fill-yellow-400 text-yellow-400" /> & Up
+                                        </Label>
+                                    </div>
+                                     <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="3" id="r3" />
+                                        <Label htmlFor="r3" className="flex items-center">
+                                            3 <Star className="h-4 w-4 ml-1 fill-yellow-400 text-yellow-400" /> & Up
+                                        </Label>
+                                    </div>
+                                </RadioGroup>
                             </div>
                         </div>
                         <AlertDialogFooter>

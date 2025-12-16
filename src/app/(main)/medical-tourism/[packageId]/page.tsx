@@ -41,6 +41,8 @@ export default function PackageDetailPage() {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedState, setSelectedState] = useState<string>('');
   
+  const [priceValue, setPriceValue] = useState<number>(25000);
+
   const handleCountryChange = (countryCode: string) => {
       setSelectedCountry(countryCode);
       setSelectedState(''); // Reset state when country changes
@@ -227,11 +229,27 @@ export default function PackageDetailPage() {
                                 </div>
                             </div>
                              <div className="space-y-4">
-                                <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
-                                <Slider id="price-range" defaultValue={[25000]} min={15000} max={50000} step={1000} />
-                                <div className="flex justify-between text-sm text-muted-foreground">
-                                    <span>$15,000</span>
-                                    <span>$50,000+</span>
+                                <div className='flex justify-between items-center'>
+                                    <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
+                                    <span className="text-sm font-medium">${priceValue.toLocaleString()}</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <Slider 
+                                        id="price-range" 
+                                        value={[priceValue]} 
+                                        min={15000} max={50000} 
+                                        step={1000}
+                                        onValueChange={(value) => setPriceValue(value[0])}
+                                    />
+                                    <Input 
+                                        type="number" 
+                                        className="w-24"
+                                        value={priceValue}
+                                        onChange={(e) => setPriceValue(Number(e.target.value))}
+                                        min={15000}
+                                        max={50000}
+                                        step={1000}
+                                    />
                                 </div>
                             </div>
                              <div className="space-y-4">

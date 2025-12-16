@@ -2,10 +2,10 @@
 'use client';
 
 import { useParams, notFound } from 'next/navigation';
-import { packages, allHospitals, allDoctors } from '@/lib/data';
+import { packages, allHospitals, allDoctors, hospitalData } from '@/lib/data';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter, Info, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -63,6 +63,8 @@ export default function PackageDetailPage() {
   if (!pkg) {
     notFound();
   }
+
+  const relevantHospitals = hospitalData[pkg.hospital.specialty.toLowerCase() as keyof typeof hospitalData] || [];
   
   // A check to see if we are on the Diamond Package page to show the filters.
   const isDiamondPackage = pkg.title === 'Comprehensive Cardiac Care Package';
@@ -263,14 +265,37 @@ export default function PackageDetailPage() {
             </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-                <p className="text-muted-foreground">Select a treatment package to see more details here.</p>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-8">
-                
+        <div className="space-y-8">
+            <h2 className="text-3xl font-bold">Hospitals Offering this Package</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relevantHospitals.map(hospital => (
+                    <Card key={hospital.id} className="flex flex-col sm:flex-row overflow-hidden">
+                        <div className="relative h-48 sm:h-auto sm:w-1/3 flex-shrink-0">
+                            <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint} />
+                        </div>
+                        <div className="flex flex-col flex-grow">
+                            <CardHeader>
+                                <CardTitle>{hospital.name}</CardTitle>
+                                <CardDescription>{hospital.location}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                                <div className="flex items-center">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star key={i} className={`h-5 w-5 ${i < hospital.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                    ))}
+                                    <span className="ml-2 text-sm text-muted-foreground">({hospital.rating.toFixed(1)})</span>
+                                </div>
+                                <p className="text-sm mt-2 text-muted-foreground line-clamp-2">
+                                    {hospital.pros.join(', ')}
+                                </p>
+                            </CardContent>
+                            <CardFooter className="bg-muted/50 p-4 flex gap-2">
+                                <Button variant="outline" className="w-full">View Details</Button>
+                                <Button className="w-full">Book Now</Button>
+                            </CardFooter>
+                        </div>
+                    </Card>
+                ))}
             </div>
         </div>
     </div>

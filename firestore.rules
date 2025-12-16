@@ -6,6 +6,7 @@
  * Core Philosophy:
  * The security model is centered around the principle that users have complete
  * and exclusive control over their own data. All data is scoped to the
+
  * authenticated user, and no user can read, write, or even list the data of
  * any other user.
  *
@@ -94,7 +95,8 @@ service cloud.firestore {
      * @path /hospitals/{hospitalId}
      */
     match /hospitals/{hospitalId} {
-      allow get, list: if true;
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
       allow create, update, delete: if false; // Read-only
     }
 
@@ -103,7 +105,8 @@ service cloud.firestore {
      * @path /doctors/{doctorId}
      */
     match /doctors/{doctorId} {
-      allow get, list: if true;
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
       allow create, update, delete: if false; // Read-only
     }
   }

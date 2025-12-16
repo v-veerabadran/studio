@@ -4,12 +4,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Check, Plane, Filter } from 'lucide-react';
+import { Check, Plane } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Separator } from '@/components/ui/separator';
 
 const packages = [
   {
@@ -71,22 +68,7 @@ const packages = [
   }
 ];
 
-const countries = [
-    { name: 'United States', code: 'US', states: ['California', 'New York', 'Texas', 'Florida'] },
-    { name: 'Canada', code: 'CA', states: ['Ontario', 'Quebec', 'British Columbia', 'Alberta'] },
-    { name: 'United Kingdom', code: 'GB', states: ['England', 'Scotland', 'Wales', 'Northern Ireland'] },
-];
-
 export default function MedicalTourismPage() {
-    const [selectedCountry, setSelectedCountry] = useState<string>('');
-    const [selectedState, setSelectedState] = useState<string>('');
-
-    const handleCountryChange = (countryCode: string) => {
-        setSelectedCountry(countryCode);
-        setSelectedState(''); // Reset state when country changes
-    }
-
-    const currentStates = countries.find(c => c.code === selectedCountry)?.states || [];
 
     return (
         <div className="container py-8">
@@ -102,31 +84,31 @@ export default function MedicalTourismPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {packages.map(pkg => (
-                    <Card key={pkg.id} className="flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-primary/50">
-                        <div className="relative h-48 w-full">
-                            <Image src={pkg.imageUrl} alt={pkg.name} fill objectFit="cover" className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
-                        </div>
-                        <CardHeader>
-                            <CardTitle className="text-2xl">{pkg.name}</CardTitle>
-                            <CardDescription className="text-2xl font-bold text-primary">{pkg.price}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-grow space-y-4">
-                           <p className="text-sm text-muted-foreground mb-4">{pkg.description}</p>
-                            <ul className="space-y-2 text-sm">
-                                {pkg.features.map(feature => (
-                                    <li key={feature} className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-green-500" />
-                                        <span>{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button asChild className="w-full">
-                                <Link href={`/medical-tourism/${pkg.id}`}>Select Package</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    <Link key={pkg.id} href={`/medical-tourism/${pkg.id}`} className="block h-full">
+                        <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-primary/50">
+                            <div className="relative h-48 w-full">
+                                <Image src={pkg.imageUrl} alt={pkg.name} fill style={{objectFit:"cover"}} className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
+                            </div>
+                            <CardHeader>
+                                <CardTitle className="text-2xl">{pkg.name}</CardTitle>
+                                <CardDescription className="text-2xl font-bold text-primary">{pkg.price}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow space-y-4">
+                            <p className="text-sm text-muted-foreground mb-4">{pkg.description}</p>
+                                <ul className="space-y-2 text-sm">
+                                    {pkg.features.map(feature => (
+                                        <li key={feature} className="flex items-center gap-2">
+                                            <Check className="h-4 w-4 text-green-500" />
+                                            <span>{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full" tabIndex={-1}>Select Package</Button>
+                            </CardFooter>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>

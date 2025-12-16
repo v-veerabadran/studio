@@ -7,14 +7,30 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks } from 'lucide-react';
+import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useState } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
+import { Textarea } from '@/components/ui/textarea';
+
 
 export default function PackageDetailPage() {
   const params = useParams();
   const packageId = params.packageId;
+  const { toast } = useToast();
+
+  const [patientName, setPatientName] = useState('');
+  const [patientCountry, setPatientCountry] = useState('');
+  const [passportNumber, setPassportNumber] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedLetter, setGeneratedLetter] = useState('');
+
 
   const pkg = packages.find((p) => p.id.toString() === packageId);
 
@@ -23,6 +39,45 @@ export default function PackageDetailPage() {
   }
 
   const { hospital, surgeon } = pkg;
+
+  const handleGenerateLetter = async () => {
+    if (!patientName || !patientCountry || !passportNumber) {
+        toast({
+            title: "Missing Information",
+            description: "Please fill out all fields to generate the letter.",
+            variant: "destructive"
+        })
+        return;
+    }
+
+    setIsGenerating(true);
+    setGeneratedLetter('');
+
+    try {
+        const input = {
+            patientName,
+            patientCountry,
+            passportNumber,
+            treatment: pkg.title,
+            hospitalName: hospital.name,
+            hospitalLocation: hospital.location,
+            surgeonName: surgeon.name,
+            estimatedStartDate: "Approximately 2-4 weeks from approval",
+            estimatedDuration: "Approximately 2-3 weeks"
+        };
+        const result = await generateVisaLetter(input);
+        setGeneratedLetter(result.visaLetter);
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Generation Failed",
+            description: "Could not generate the visa support letter. Please try again.",
+            variant: "destructive"
+        })
+    } finally {
+        setIsGenerating(false);
+    }
+  }
 
   return (
     <div>
@@ -138,6 +193,64 @@ export default function PackageDetailPage() {
               </CardHeader>
               <CardContent>
                 <Button size="lg" className="w-full">Start Inquiry</Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="outline" className="w-full mt-2">
+                           <FileText className="mr-2 h-4 w-4" />
+                           Generate Visa Letter
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="max-w-2xl">
+                         <AlertDialogHeader>
+                            <AlertDialogTitle>Generate Visa Support Letter</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Fill in your details to generate a personalized visa support letter from the hospital.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        {generatedLetter ? (
+                            <div className="space-y-4">
+                                <p className="text-sm text-muted-foreground">Your letter has been generated. You can copy it below.</p>
+                                <Textarea readOnly value={generatedLetter} className="h-64 text-xs bg-muted" />
+                                <Button onClick={() => {
+                                    navigator.clipboard.writeText(generatedLetter);
+                                    toast({ title: "Copied!", description: "The letter has been copied to your clipboard." });
+                                }}>Copy Letter</Button>
+                            </div>
+                        ) : (
+                             <div className="space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="patient-name">Full Name (as on passport)</Label>
+                                        <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="passport-number">Passport Number</Label>
+                                        <Input id="passport-number" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="patient-country">Country of Citizenship</Label>
+                                    <Input id="patient-country" value={patientCountry} onChange={(e) => setPatientCountry(e.target.value)} />
+                                </div>
+                             </div>
+                        )}
+                       
+                        <AlertDialogFooter>
+                             {generatedLetter ? (
+                                <AlertDialogCancel>Close</AlertDialogCancel>
+                            ) : (
+                                <>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <Button onClick={handleGenerateLetter} disabled={isGenerating}>
+                                        {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Generate
+                                    </Button>
+                                </>
+                            )}
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 <Separator className="my-4" />
                 <p className="text-sm font-semibold mb-2">Package Highlights</p>
                 <ul className="space-y-2 text-sm text-muted-foreground">
@@ -156,3 +269,5 @@ export default function PackageDetailPage() {
     </div>
   );
 }
+
+    

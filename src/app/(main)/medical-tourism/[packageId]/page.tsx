@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter } from 'lucide-react';
+import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, DollarSign, ListChecks, FileText, Loader2, Printer, Filter, Info } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -128,7 +128,54 @@ export default function PackageDetailPage() {
             <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" data-ai-hint={pkg.imageHint} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-0 left-0 p-8">
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{pkg.title}</h1>
+                <div className="flex items-center gap-4">
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{pkg.title}</h1>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 mb-2">
+                                <Info className="h-6 w-6" />
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{pkg.title} - Details</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Review the inclusions and terms for this package.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-4">
+                                <div>
+                                    <h3 className="font-semibold mb-2 text-foreground">Package Inclusions</h3>
+                                    <ul className="space-y-2">
+                                        {pkg.inclusions.map((item, index) => (
+                                            <li key={index} className="flex items-start gap-3">
+                                                <CheckCircle className="h-4 w-4 text-green-500 mt-1 flex-shrink-0" />
+                                                <div className="text-sm">
+                                                    <p className="font-medium text-foreground">{item.item}</p>
+                                                    <p className="text-muted-foreground">{item.details}</p>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold mb-2 text-foreground">Terms & Conditions</h3>
+                                    <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                                        <li>Prices are indicative and subject to change based on the final treatment plan.</li>
+                                        <li>Package does not cover costs for any additional, unforeseen treatments or complications.</li>
+                                        <li>Accommodation is for the patient only. Companion charges are separate.</li>
+                                        <li>Visa approval is at the sole discretion of the embassy.</li>
+                                        <li>A 50% advance payment is required to confirm the booking.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <AlertDialogFooter>
+                                <AlertDialogAction>Close</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
                 <p className="text-lg text-white/90">{pkg.description}</p>
             </div>
         </div>
@@ -332,4 +379,3 @@ export default function PackageDetailPage() {
   );
 }
 
-    

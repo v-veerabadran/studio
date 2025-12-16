@@ -220,18 +220,15 @@ export default function MedicalTourismPage() {
                 <CardDescription>A step-by-step overview of your managed travel arrangements.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="relative pl-6">
+                <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2">
                     {travelSteps.map((step, index) => (
-                        <div key={index} className="flex items-start gap-6 pb-8">
-                            <div className="flex flex-col items-center">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                        <div key={index} className="relative flex items-start gap-6 pb-8 last:pb-0">
+                            <div className="relative z-10">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
                                     <step.icon className="h-6 w-6" />
                                 </div>
-                                {index < travelSteps.length - 1 && (
-                                    <div className="mt-2 w-px flex-1 bg-border" />
-                                )}
                             </div>
-                            <div>
+                            <div className="pt-2">
                                 <h4 className="font-semibold">{step.title}</h4>
                                 <p className="text-sm text-muted-foreground">{step.description}</p>
                             </div>

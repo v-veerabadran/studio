@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -303,32 +302,34 @@ export default function MedicalTourismPage() {
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {packages.map((pkg) => (
-                        <Card key={pkg.id} className="flex flex-col">
-                            <div className="relative h-48 w-full">
-                            <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
+                        <Card key={pkg.id} className="flex flex-col overflow-hidden">
+                             <div className="relative h-48 w-full">
+                                <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" data-ai-hint={pkg.imageHint} />
                             </div>
-                            <CardHeader>
-                            <CardTitle>{pkg.title}</CardTitle>
-                            <CardDescription className="flex items-center gap-2 pt-1"><BriefcaseMedical className="h-4 w-4" />{pkg.price}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-grow">
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                {pkg.highlights.slice(0, 2).map((highlight, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">&#10003;</span>
-                                    <span>{highlight}</span>
-                                </li>
-                                ))}
-                            </ul>
-                            </CardContent>
-                            <CardFooter>
-                            <Button asChild className="w-full">
-                                <Link href={`/medical-tourism/${pkg.id}`}>
-                                    Learn More & Inquire
-                                    <ExternalLink className="ml-2 h-4 w-4" />
-                                </Link>
-                            </Button>
-                            </CardFooter>
+                            <div className="flex flex-col flex-grow">
+                                <CardHeader>
+                                    <CardTitle className="text-lg">{pkg.title}</CardTitle>
+                                    <CardDescription>{pkg.price}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                <ul className="space-y-2 text-sm text-muted-foreground">
+                                    {pkg.highlights.slice(0, 2).map((highlight, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                        <span className="text-primary mt-1">&#10003;</span>
+                                        <span>{highlight}</span>
+                                    </li>
+                                    ))}
+                                </ul>
+                                </CardContent>
+                                <CardFooter>
+                                <Button asChild className="w-full">
+                                    <Link href={`/medical-tourism/${pkg.id}`}>
+                                        Learn More
+                                        <ExternalLink className="ml-2 h-4 w-4" />
+                                    </Link>
+                                </Button>
+                                </CardFooter>
+                            </div>
                         </Card>
                         ))}
                     </div>
@@ -347,3 +348,5 @@ export default function MedicalTourismPage() {
     </>
   );
 }
+
+    

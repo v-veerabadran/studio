@@ -1,9 +1,8 @@
 
-
 'use client';
 
 import { useParams, notFound } from 'next/navigation';
-import { packages, allHospitals, allDoctors, hospitalData } from '@/lib/data';
+import { packages, allHospitals, allDoctors, hospitalData, type Hospital } from '@/lib/data';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -12,7 +11,7 @@ import { CheckCircle, MapPin, Stethoscope, BriefcaseMedical, CalendarDays, Dolla
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -39,10 +38,33 @@ export default function PackageDetailPage() {
   const [generatedLetter, setGeneratedLetter] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
+  const relevantHospitals = useMemo(() => {
+    if (!pkg) return [];
+    return hospitalData[pkg.hospital.specialty.toLowerCase() as keyof typeof hospitalData] || [];
+  }, [pkg]);
+  
+  const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>(relevantHospitals);
+
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedState, setSelectedState] = useState<string>('');
-  
-  const [priceRange, setPriceRange] = useState<[number, number]>([15000, 35000]);
+  const [rating, setRating] = useState('any');
+
+  const { minPrice, maxPrice } = useMemo(() => {
+    if (relevantHospitals.length === 0) return { minPrice: 0, maxPrice: 100000 };
+    const prices = relevantHospitals.map(h => h.price);
+    return {
+        minPrice: Math.min(...prices),
+        maxPrice: Math.max(...prices)
+    };
+  }, [relevantHospitals]);
+
+  const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
+
+  useEffect(() => {
+    setFilteredHospitals(relevantHospitals);
+    setPriceRange([minPrice, maxPrice]);
+  }, [relevantHospitals, minPrice, maxPrice]);
+
 
   const handleCountryChange = (countryCode: string) => {
       setSelectedCountry(countryCode);
@@ -66,11 +88,28 @@ export default function PackageDetailPage() {
   if (!pkg) {
     notFound();
   }
-
-  const relevantHospitals = hospitalData[pkg.hospital.specialty.toLowerCase() as keyof typeof hospitalData] || [];
   
-  // A check to see if we are on the Diamond Package page to show the filters.
-  const isDiamondPackage = pkg.title === 'Comprehensive Cardiac Care Package';
+  const handleFilterApply = () => {
+    let hospitals = relevantHospitals;
+
+    if (selectedState) {
+        // This is a mock filter as we don't have state data in our hospital objects.
+        // In a real app, you would filter by state.
+        toast({ title: "State filter applied (demo)"});
+    }
+
+    if (rating !== 'any') {
+        hospitals = hospitals.filter(h => h.rating >= parseInt(rating));
+    }
+
+    hospitals = hospitals.filter(h => h.price >= priceRange[0] && h.price <= priceRange[1]);
+
+    setFilteredHospitals(hospitals);
+    toast({
+        title: "Filters Applied",
+        description: `Found ${hospitals.length} hospitals matching your criteria.`,
+    });
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -187,116 +226,114 @@ export default function PackageDetailPage() {
             </div>
         </div>
 
-        {isDiamondPackage && (
-            <div className="mb-8">
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="outline">
-                            <Filter className="mr-2 h-4 w-4" />
-                            Filter Options
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Filter Options</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Find providers for this package based on your preferences.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <div className="space-y-6 py-4">
-                           <div className="space-y-4">
-                                <Label className="font-semibold">Location</Label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Select onValueChange={handleCountryChange} value={selectedCountry}>
-                                        <SelectTrigger id="country">
-                                            <SelectValue placeholder="Country" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {countries.map(country => (
-                                                <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
-                                        <SelectTrigger id="state">
-                                            <SelectValue placeholder="State/Province" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {currentStates.map(state => (
-                                                <SelectItem key={state} value={state}>{state}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
-                                <Slider
-                                    id="price-range"
-                                    value={priceRange}
-                                    min={15000} max={50000}
-                                    step={1000}
-                                    onValueChange={(value) => setPriceRange(value as [number, number])}
-                                />
-                                <div className="flex items-center gap-4">
-                                    <div className="flex-1 space-y-1">
-                                        <Label htmlFor="min-price" className="text-xs text-muted-foreground">Min price</Label>
-                                        <Input
-                                            id="min-price"
-                                            type="number"
-                                            value={priceRange[0]}
-                                            onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
-                                            step={1000}
-                                            min="15000"
-                                        />
-                                    </div>
-                                    <div className="flex-1 space-y-1">
-                                         <Label htmlFor="max-price" className="text-xs text-muted-foreground">Max price</Label>
-                                        <Input
-                                            id="max-price"
-                                            type="number"
-                                            value={priceRange[1]}
-                                            onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
-                                            step={1000}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                             <div className="space-y-4">
-                                <Label className="font-semibold">Rating</Label>
-                                <RadioGroup defaultValue="any" className="flex items-center gap-4">
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="any" id="r1" />
-                                        <Label htmlFor="r1">Any</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="4" id="r2" />
-                                        <Label htmlFor="r2" className="flex items-center">
-                                            4 <Star className="h-4 w-4 ml-1 fill-yellow-400 text-yellow-400" /> & Up
-                                        </Label>
-                                    </div>
-                                     <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="3" id="r3" />
-                                        <Label htmlFor="r3" className="flex items-center">
-                                            3 <Star className="h-4 w-4 ml-1 fill-yellow-400 text-yellow-400" /> & Up
-                                        </Label>
-                                    </div>
-                                </RadioGroup>
+        <div className="mb-8">
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="outline">
+                        <Filter className="mr-2 h-4 w-4" />
+                        Filter Options
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Filter Options</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Find providers for this package based on your preferences.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-6 py-4">
+                       <div className="space-y-4">
+                            <Label className="font-semibold">Location</Label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Select onValueChange={handleCountryChange} value={selectedCountry}>
+                                    <SelectTrigger id="country">
+                                        <SelectValue placeholder="Country" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {countries.map(country => (
+                                            <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
+                                    <SelectTrigger id="state">
+                                        <SelectValue placeholder="State/Province" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {currentStates.map(state => (
+                                            <SelectItem key={state} value={state}>{state}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction>Apply Filters</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
-        )}
+                        <div className="space-y-4">
+                            <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
+                            <Slider
+                                id="price-range"
+                                value={priceRange}
+                                min={minPrice} max={maxPrice}
+                                step={1000}
+                                onValueChange={(value) => setPriceRange(value as [number, number])}
+                            />
+                            <div className="flex items-center gap-4">
+                                <div className="flex-1 space-y-1">
+                                    <Label htmlFor="min-price" className="text-xs text-muted-foreground">Min price</Label>
+                                    <Input
+                                        id="min-price"
+                                        type="number"
+                                        value={priceRange[0]}
+                                        onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
+                                        step={1000}
+                                        min={minPrice}
+                                    />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                     <Label htmlFor="max-price" className="text-xs text-muted-foreground">Max price</Label>
+                                    <Input
+                                        id="max-price"
+                                        type="number"
+                                        value={priceRange[1]}
+                                        onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
+                                        step={1000}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                         <div className="space-y-4">
+                            <Label className="font-semibold">Rating</Label>
+                            <RadioGroup defaultValue="any" className="flex items-center gap-4" value={rating} onValueChange={setRating}>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="any" id="r1" />
+                                    <Label htmlFor="r1">Any</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="4" id="r2" />
+                                    <Label htmlFor="r2" className="flex items-center">
+                                        4 <Star className="h-4 w-4 ml-1 fill-yellow-400 text-yellow-400" /> & Up
+                                    </Label>
+                                </div>
+                                 <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="3" id="r3" />
+                                    <Label htmlFor="r3" className="flex items-center">
+                                        3 <Star className="h-4 w-4 ml-1 fill-yellow-400 text-yellow-400" /> & Up
+                                    </Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                    </div>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleFilterApply}>Apply Filters</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
 
         <div className="space-y-8">
             <h2 className="text-3xl font-bold">Hospitals Offering this Package</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {relevantHospitals.map(hospital => (
+                {filteredHospitals.map(hospital => (
                     <Card key={hospital.id} className="flex flex-col sm:flex-row overflow-hidden">
                         <div className="relative h-48 sm:h-auto sm:w-1/3 flex-shrink-0">
                             <Image src={hospital.imageUrl} alt={hospital.name} fill objectFit="cover" data-ai-hint={hospital.imageHint} />
@@ -313,6 +350,7 @@ export default function PackageDetailPage() {
                                     ))}
                                     <span className="ml-2 text-sm text-muted-foreground">({hospital.rating.toFixed(1)})</span>
                                 </div>
+                                <p className="font-bold text-lg mt-2">${hospital.price.toLocaleString()}</p>
                                 <p className="text-sm mt-2 text-muted-foreground line-clamp-2">
                                     {hospital.pros.join(', ')}
                                 </p>
@@ -324,6 +362,11 @@ export default function PackageDetailPage() {
                         </div>
                     </Card>
                 ))}
+                {filteredHospitals.length === 0 && (
+                    <div className="md:col-span-2 text-center py-12">
+                        <p className="text-muted-foreground">No hospitals match your filter criteria.</p>
+                    </div>
+                )}
             </div>
         </div>
     </div>
@@ -337,3 +380,5 @@ export default function PackageDetailPage() {
     </>
   );
 }
+
+    

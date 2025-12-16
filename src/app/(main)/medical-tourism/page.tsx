@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 
 const packages = [
   {
-    id: 'diamond',
+    id: 1,
     name: 'Diamond Package',
     price: '$25,000',
     description: 'The ultimate, all-inclusive experience with unparalleled luxury and personal care.',
@@ -28,7 +28,7 @@ const packages = [
     ]
   },
   {
-    id: 'platinum',
+    id: 2,
     name: 'Platinum Package',
     price: '$18,000',
     description: 'A premium package offering superior comfort and comprehensive medical services.',
@@ -42,7 +42,7 @@ const packages = [
     ]
   },
   {
-    id: 'gold',
+    id: 3,
     name: 'Gold Package',
     price: '$12,000',
     description: 'Our most popular package, balancing excellent care with great value.',
@@ -56,7 +56,7 @@ const packages = [
     ]
   },
   {
-    id: 'silver',
+    id: 4,
     name: 'Silver Package',
     price: '$8,000',
     description: 'An essential care package covering all fundamental medical and travel needs.',
@@ -100,44 +100,6 @@ export default function MedicalTourismPage() {
                 </p>
             </div>
 
-            <Card className="mb-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5" /> Filter Packages</CardTitle>
-                    <CardDescription>Find the perfect package by filtering by location.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Select onValueChange={handleCountryChange} value={selectedCountry}>
-                            <SelectTrigger id="country">
-                                <SelectValue placeholder="Select a country" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {countries.map(country => (
-                                    <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="state">State / Province</Label>
-                        <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
-                            <SelectTrigger id="state">
-                                <SelectValue placeholder="Select a state" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {currentStates.map(state => (
-                                    <SelectItem key={state} value={state}>{state}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2 self-end">
-                         <Button className="w-full">Apply Filters</Button>
-                    </div>
-                </CardContent>
-            </Card>
-            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {packages.map(pkg => (
                     <Card key={pkg.id} className="flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-primary/50">

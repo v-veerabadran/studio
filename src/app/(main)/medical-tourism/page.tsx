@@ -10,7 +10,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Loader2, Printer, Home, Plane, BedDouble, HospitalIcon } from 'lucide-react';
+import { FileText, Loader2, Printer, Home, Plane, BedDouble, HospitalIcon, BriefcaseMedical, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import {
     AlertDialog,
@@ -28,6 +28,10 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { packages } from '@/lib/data';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function MedicalTourismPage() {
     const { toast } = useToast();
@@ -118,127 +122,171 @@ export default function MedicalTourismPage() {
   return (
     <>
     <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Medical Tourism</h1>
-            <AlertDialog open={isDialogOpen} onOpenChange={handleOpenChange}>
-                <AlertDialogTrigger asChild>
-                    <Button>
-                        <FileText className="mr-2 h-4 w-4" />
-                        Generate Visa Letter
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="max-w-2xl print:hidden">
-                    {!generatedLetter ? (
-                        <>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Visa Support Letter Generator</AlertDialogTitle>
-                            <AlertDialogDescription>Fill in the details below to generate a personalized visa support letter.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="patientName">Full Name (as on passport)</Label>
-                                    <Input id="patientName" value={formState.patientName} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="passportNumber">Passport Number</Label>
-                                    <Input id="passportNumber" value={formState.passportNumber} onChange={handleInputChange} />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="patientCountry">Country of Citizenship</Label>
-                                <Input id="patientCountry" value={formState.patientCountry} onChange={handleInputChange} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="treatment">Medical Procedure/Package</Label>
-                                <Input id="treatment" value={formState.treatment} onChange={handleInputChange} />
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="hospitalName">Hospital Name</Label>
-                                    <Input id="hospitalName" value={formState.hospitalName} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="hospitalLocation">Hospital Location (City, Country)</Label>
-                                    <Input id="hospitalLocation" value={formState.hospitalLocation} onChange={handleInputChange} />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="surgeonName">Attending Surgeon's Name</Label>
-                                <Input id="surgeonName" value={formState.surgeonName} onChange={handleInputChange} />
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="estimatedStartDate">Estimated Start Date</Label>
-                                    <Input id="estimatedStartDate" value={formState.estimatedStartDate} onChange={handleInputChange} placeholder="e.g., Approx. 2 weeks from visa approval"/>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="estimatedDuration">Estimated Duration of Stay</Label>
-                                    <Input id="estimatedDuration" value={formState.estimatedDuration} onChange={handleInputChange} placeholder="e.g., 3-4 weeks"/>
-                                </div>
-                            </div>
-                        </div>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button onClick={handleGenerateLetter} disabled={isGenerating || !isFormValid()}>
-                                {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Generate
-                            </Button>
-                        </AlertDialogFooter>
-                        </>
-                    ) : (
-                         <>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Generated Visa Support Letter</AlertDialogTitle>
-                            <AlertDialogDescription>Your letter has been generated. You can now print it or save it as a PDF.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                         {isGenerating ? (
-                            <div className="flex items-center justify-center h-64">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            </div>
-                        ) : (
-                            <div id="visa-letter-content" className="prose prose-sm max-w-none h-64 overflow-y-auto rounded-md border p-4 bg-muted whitespace-pre-wrap font-sans">
-                                {generatedLetter}
-                            </div>
-                        )}
-                        <AlertDialogFooter>
-                            <Button variant="outline" onClick={handleNewLetter}>Generate New Letter</Button>
-                            <Button onClick={() => window.print()}>
-                                <Printer className="mr-2 h-4 w-4" />
-                                Print / Save as PDF
-                            </Button>
-                        </AlertDialogFooter>
-                        </>
-                    )}
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
+        <h1 className="text-3xl font-bold mb-8">Medical Tourism</h1>
         
-        <Card>
-            <CardHeader>
-                <CardTitle>Your Travel Itinerary</CardTitle>
-                <CardDescription>A step-by-step overview of your managed travel arrangements.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2 md:pl-0 md:before:left-1/2 md:before:top-[24px] md:before:h-px md:before:w-full md:before:translate-x-0 md:before:-translate-y-1/2">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-y-8 md:gap-x-8">
-                        {travelSteps.map((step, index) => (
-                            <div key={index} className="relative flex md:flex-col items-start md:items-center gap-6 md:gap-2">
-                                <div className="relative z-10">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
-                                        <step.icon className="h-6 w-6" />
+         <Tabs defaultValue="visa-travel">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="visa-travel">Visa & Travel</TabsTrigger>
+                <TabsTrigger value="packages">Treatment Packages</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="visa-travel">
+                 <div className="flex justify-end items-center mb-8">
+                    <AlertDialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+                        <AlertDialogTrigger asChild>
+                            <Button>
+                                <FileText className="mr-2 h-4 w-4" />
+                                Generate Visa Letter
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-2xl print:hidden">
+                            {!generatedLetter ? (
+                                <>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Visa Support Letter Generator</AlertDialogTitle>
+                                    <AlertDialogDescription>Fill in the details below to generate a personalized visa support letter.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="patientName">Full Name (as on passport)</Label>
+                                            <Input id="patientName" value={formState.patientName} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="passportNumber">Passport Number</Label>
+                                            <Input id="passportNumber" value={formState.passportNumber} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="patientCountry">Country of Citizenship</Label>
+                                        <Input id="patientCountry" value={formState.patientCountry} onChange={handleInputChange} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="treatment">Medical Procedure/Package</Label>
+                                        <Input id="treatment" value={formState.treatment} onChange={handleInputChange} />
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hospitalName">Hospital Name</Label>
+                                            <Input id="hospitalName" value={formState.hospitalName} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hospitalLocation">Hospital Location (City, Country)</Label>
+                                            <Input id="hospitalLocation" value={formState.hospitalLocation} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="surgeonName">Attending Surgeon's Name</Label>
+                                        <Input id="surgeonName" value={formState.surgeonName} onChange={handleInputChange} />
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="estimatedStartDate">Estimated Start Date</Label>
+                                            <Input id="estimatedStartDate" value={formState.estimatedStartDate} onChange={handleInputChange} placeholder="e.g., Approx. 2 weeks from visa approval"/>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="estimatedDuration">Estimated Duration of Stay</Label>
+                                            <Input id="estimatedDuration" value={formState.estimatedDuration} onChange={handleInputChange} placeholder="e.g., 3-4 weeks"/>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="pt-2 md:pt-0 md:text-center">
-                                    <h4 className="font-semibold">{step.title}</h4>
-                                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <Button onClick={handleGenerateLetter} disabled={isGenerating || !isFormValid()}>
+                                        {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Generate
+                                    </Button>
+                                </AlertDialogFooter>
+                                </>
+                            ) : (
+                                <>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Generated Visa Support Letter</AlertDialogTitle>
+                                    <AlertDialogDescription>Your letter has been generated. You can now print it or save it as a PDF.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                {isGenerating ? (
+                                    <div className="flex items-center justify-center h-64">
+                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                    </div>
+                                ) : (
+                                    <div id="visa-letter-content" className="prose prose-sm max-w-none h-64 overflow-y-auto rounded-md border p-4 bg-muted whitespace-pre-wrap font-sans">
+                                        {generatedLetter}
+                                    </div>
+                                )}
+                                <AlertDialogFooter>
+                                    <Button variant="outline" onClick={handleNewLetter}>Generate New Letter</Button>
+                                    <Button onClick={() => window.print()}>
+                                        <Printer className="mr-2 h-4 w-4" />
+                                        Print / Save as PDF
+                                    </Button>
+                                </AlertDialogFooter>
+                                </>
+                            )}
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
-            </CardContent>
-        </Card>
+                
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Your Travel Itinerary</CardTitle>
+                        <CardDescription>A step-by-step overview of your managed travel arrangements.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2 md:pl-0 md:before:left-1/2 md:before:top-[24px] md:before:h-px md:before:w-full md:before:translate-x-0 md:before:-translate-y-1/2">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-y-8 md:gap-x-8">
+                                {travelSteps.map((step, index) => (
+                                    <div key={index} className="relative flex md:flex-col items-start md:items-center gap-6 md:gap-2">
+                                        <div className="relative z-10">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
+                                                <step.icon className="h-6 w-6" />
+                                            </div>
+                                        </div>
+                                        <div className="pt-2 md:pt-0 md:text-center">
+                                            <h4 className="font-semibold">{step.title}</h4>
+                                            <p className="text-sm text-muted-foreground">{step.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+
+            <TabsContent value="packages">
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {packages.map((pkg) => (
+                    <Card key={pkg.id} className="flex flex-col">
+                        <div className="relative h-48 w-full">
+                        <Image src={pkg.imageUrl} alt={pkg.title} fill objectFit="cover" className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
+                        </div>
+                        <CardHeader>
+                        <CardTitle>{pkg.title}</CardTitle>
+                        <CardDescription className="flex items-center gap-2 pt-1"><BriefcaseMedical className="h-4 w-4" />{pkg.price}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-grow">
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            {pkg.highlights.slice(0, 2).map((highlight, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                                <span className="text-primary mt-1">&#10003;</span>
+                                <span>{highlight}</span>
+                            </li>
+                            ))}
+                        </ul>
+                        </CardContent>
+                        <CardFooter>
+                        <Button asChild className="w-full">
+                            <Link href={`/medical-tourism/${pkg.id}`}>
+                                Learn More & Inquire
+                                <ExternalLink className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                        </CardFooter>
+                    </Card>
+                    ))}
+                </div>
+            </TabsContent>
+        </Tabs>
 
     </div>
      <div id="printable-visa-letter" className="hidden print:block p-8 font-serif">

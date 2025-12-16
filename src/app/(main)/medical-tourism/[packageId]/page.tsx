@@ -219,42 +219,8 @@ export default function PackageDetailPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><ListChecks /> What's Included</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-4">
-                            {pkg.inclusions.map((item, index) => (
-                                <li key={index} className="flex items-start gap-4">
-                                    <CheckCircle className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold">{item.item}</p>
-                                        <p className="text-sm text-muted-foreground">{item.details}</p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><CalendarDays /> Sample Itinerary</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="relative pl-6 before:absolute before:left-[11px] before:top-0 before:h-full before:w-px before:bg-border">
-                            {pkg.itinerary.map((item, index) => (
-                                <div key={index} className="relative mb-6">
-                                    <div className="absolute -left-3.5 mt-1.5 h-3 w-3 rounded-full bg-primary ring-4 ring-background" />
-                                    <p className="font-semibold">Day {item.day}</p>
-                                    <p className="text-sm text-muted-foreground">{item.activity}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                <p className="text-muted-foreground">Select a treatment package to see more details here.</p>
             </div>
 
             {/* Sidebar */}
@@ -378,5 +344,3 @@ export default function PackageDetailPage() {
     </>
   );
 }
-
-    

@@ -136,20 +136,20 @@ export default function PackageDetailPage() {
                                 <Info className="h-6 w-6" />
                             </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="max-w-2xl">
                             <AlertDialogHeader>
-                                <AlertDialogTitle>{pkg.title} - Details</AlertDialogTitle>
+                                <AlertDialogTitle className="text-2xl">{pkg.title} - Details</AlertDialogTitle>
                                 <AlertDialogDescription>
                                     Review the inclusions and terms for this package.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-4">
+                            <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-6">
                                 <div>
-                                    <h3 className="font-semibold mb-2 text-foreground">Package Inclusions</h3>
-                                    <ul className="space-y-2">
+                                    <h3 className="font-semibold text-lg mb-3 text-foreground">Package Inclusions</h3>
+                                    <ul className="space-y-3">
                                         {pkg.inclusions.map((item, index) => (
                                             <li key={index} className="flex items-start gap-3">
-                                                <CheckCircle className="h-4 w-4 text-green-500 mt-1 flex-shrink-0" />
+                                                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                                                 <div className="text-sm">
                                                     <p className="font-medium text-foreground">{item.item}</p>
                                                     <p className="text-muted-foreground">{item.details}</p>
@@ -160,7 +160,7 @@ export default function PackageDetailPage() {
                                 </div>
                                 <Separator />
                                 <div>
-                                    <h3 className="font-semibold mb-2 text-foreground">Terms & Conditions</h3>
+                                    <h3 className="font-semibold text-lg mb-3 text-foreground">Terms & Conditions</h3>
                                     <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
                                         <li>Prices are indicative and subject to change based on the final treatment plan.</li>
                                         <li>Package does not cover costs for any additional, unforeseen treatments or complications.</li>
@@ -170,7 +170,7 @@ export default function PackageDetailPage() {
                                     </ul>
                                 </div>
                             </div>
-                            <AlertDialogFooter>
+                            <AlertDialogFooter className="mt-4">
                                 <AlertDialogAction>Close</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
@@ -379,3 +379,4 @@ export default function PackageDetailPage() {
   );
 }
 
+    

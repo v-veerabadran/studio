@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useParams, notFound } from 'next/navigation';
@@ -333,4 +334,5 @@ export default function PackageDetailPage() {
         </div>
       </div>
     </>
-    
+  );
+}

@@ -10,7 +10,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Loader2, Printer } from 'lucide-react';
+import { FileText, Loader2, Printer, Home, Plane, BedDouble, HospitalIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
     AlertDialog,
@@ -27,6 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { generateVisaLetter } from '@/ai/flows/generate-visa-letter-flow';
+import { cn } from '@/lib/utils';
 
 export default function MedicalTourismPage() {
     const { toast } = useToast();
@@ -45,6 +46,14 @@ export default function MedicalTourismPage() {
         estimatedStartDate: '',
         estimatedDuration: '',
     });
+
+    const travelSteps = [
+        { icon: Home, title: "Pickup from Home", description: "Coordinated transportation from your residence to the airport." },
+        { icon: Plane, title: "Flight Booking", description: "Your flight details and tickets will be managed and provided." },
+        { icon: BedDouble, title: "Hotel/Motel Drop-off", description: "Seamless transfer from the destination airport to your accommodation." },
+        { icon: HospitalIcon, title: "Hospital Transfer", description: "Scheduled pickup from your hotel for your hospital appointment." },
+    ];
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -204,7 +213,34 @@ export default function MedicalTourismPage() {
                 </AlertDialogContent>
             </AlertDialog>
         </div>
-        {/* You can add other content for the Medical Tourism page here in the future */}
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Your Travel Itinerary</CardTitle>
+                <CardDescription>A step-by-step overview of your managed travel arrangements.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="relative pl-6">
+                    {travelSteps.map((step, index) => (
+                        <div key={index} className="flex items-start gap-6 pb-8">
+                            <div className="flex flex-col items-center">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                    <step.icon className="h-6 w-6" />
+                                </div>
+                                {index < travelSteps.length - 1 && (
+                                    <div className="mt-2 w-px flex-1 bg-border" />
+                                )}
+                            </div>
+                            <div>
+                                <h4 className="font-semibold">{step.title}</h4>
+                                <p className="text-sm text-muted-foreground">{step.description}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+
     </div>
      <div id="printable-visa-letter" className="hidden print:block p-8 font-serif">
         <h1 className="text-2xl font-bold mb-4">{formState.hospitalName}</h1>

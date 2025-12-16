@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Check, Plane } from 'lucide-react';
+import { Check, Plane, Filter } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -90,7 +90,7 @@ export default function MedicalTourismPage() {
 
     return (
         <div className="container py-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold tracking-tight text-primary flex items-center justify-center gap-3">
                     <Plane className="h-10 w-10" />
                     Medical Tourism Packages
@@ -99,6 +99,44 @@ export default function MedicalTourismPage() {
                     World-class care, unparalleled comfort. All packages are customizable.
                 </p>
             </div>
+
+            <Card className="mb-8">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5" /> Filter Packages</CardTitle>
+                    <CardDescription>Find the perfect package by filtering by location.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Select onValueChange={handleCountryChange} value={selectedCountry}>
+                            <SelectTrigger id="country">
+                                <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {countries.map(country => (
+                                    <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="state">State / Province</Label>
+                        <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
+                            <SelectTrigger id="state">
+                                <SelectValue placeholder="Select a state" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {currentStates.map(state => (
+                                    <SelectItem key={state} value={state}>{state}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2 self-end">
+                         <Button className="w-full">Apply Filters</Button>
+                    </div>
+                </CardContent>
+            </Card>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {packages.map(pkg => (
@@ -120,42 +158,6 @@ export default function MedicalTourismPage() {
                                     </li>
                                 ))}
                             </ul>
-
-                             {pkg.id === 'diamond' && (
-                                <>
-                                <Separator className="my-4" />
-                                <div className="space-y-4">
-                                    <h4 className="text-sm font-semibold text-muted-foreground">Customize Your Destination</h4>
-                                     <div className="space-y-2">
-                                        <Label htmlFor="country">Country</Label>
-                                        <Select onValueChange={handleCountryChange} value={selectedCountry}>
-                                            <SelectTrigger id="country">
-                                                <SelectValue placeholder="Select a country" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {countries.map(country => (
-                                                    <SelectItem key={country.code} value={country.code}>{country.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                     <div className="space-y-2">
-                                        <Label htmlFor="state">State / Province</Label>
-                                        <Select onValueChange={setSelectedState} value={selectedState} disabled={!selectedCountry}>
-                                            <SelectTrigger id="state">
-                                                <SelectValue placeholder="Select a state" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {currentStates.map(state => (
-                                                    <SelectItem key={state} value={state}>{state}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-                                </>
-                            )}
-
                         </CardContent>
                         <CardFooter>
                             <Button asChild className="w-full">

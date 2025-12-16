@@ -14,14 +14,13 @@ import { FileText, Loader2, Printer, Home, Plane, BedDouble, HospitalIcon, Brief
 import { useState } from 'react';
 import {
     AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
+    AlertDialogCancel
   } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -44,7 +43,7 @@ export default function MedicalTourismPage() {
     const [generatedLetter, setGeneratedLetter] = useState('');
     const [isVisaDialogOpen, setIsVisaDialogOpen] = useState(false);
     const [isPickupDialogOpen, setIsPickupDialogOpen] = useState(false);
-    const [pickupDateTime, setPickupDateTime] = useState<Dayjs | null>(null);
+    const [pickupDateTime, setPickupDateTime] = useState<Dayjs | null>(dayjs());
 
     const [formState, setFormState] = useState({
         patientName: '',
@@ -126,8 +125,8 @@ export default function MedicalTourismPage() {
         }
     }
     
-    const handleConfirmPickup = () => {
-        if (!pickupDateTime) {
+    const handleConfirmPickup = (date: Dayjs | null) => {
+        if (!date) {
             toast({
                 title: "No date selected",
                 description: "Please select a date and time for your pickup.",
@@ -137,7 +136,7 @@ export default function MedicalTourismPage() {
         }
         toast({
             title: "Pickup Scheduled!",
-            description: `Your pickup is confirmed for ${pickupDateTime.format("MMMM D, YYYY, h:mm A")}.`
+            description: `Your pickup is confirmed for ${date.format("MMMM D, YYYY, h:mm A")}.`
         });
         setIsPickupDialogOpen(false);
     }
@@ -272,17 +271,15 @@ export default function MedicalTourismPage() {
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <StaticDateTimePicker 
                                                             orientation={isMobile ? "portrait" : "landscape"}
-                                                            value={pickupDateTime || dayjs()}
+                                                            value={pickupDateTime}
                                                             onChange={(newValue) => setPickupDateTime(newValue)}
+                                                            onAccept={handleConfirmPickup}
+                                                            onClose={() => setIsPickupDialogOpen(false)}
                                                             ampm={true}
                                                             disablePast
                                                         />
                                                     </LocalizationProvider>
                                                 </div>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={handleConfirmPickup}>Confirm</AlertDialogAction>
-                                                </AlertDialogFooter>
                                             </AlertDialogContent>
                                         </AlertDialog>
                                     </div>

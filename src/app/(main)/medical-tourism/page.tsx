@@ -220,20 +220,22 @@ export default function MedicalTourismPage() {
                 <CardDescription>A step-by-step overview of your managed travel arrangements.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2">
-                    {travelSteps.map((step, index) => (
-                        <div key={index} className="relative flex items-start gap-6 pb-8 last:pb-0">
-                            <div className="relative z-10">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
-                                    <step.icon className="h-6 w-6" />
+                <div className="relative pl-6 before:absolute before:left-[35px] before:top-0 before:h-full before:w-px before:bg-border before:-translate-x-1/2 md:pl-0 md:before:left-1/2 md:before:top-[24px] md:before:h-px md:before:w-full md:before:translate-x-0 md:before:-translate-y-1/2">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-y-8 md:gap-x-8">
+                        {travelSteps.map((step, index) => (
+                            <div key={index} className="relative flex md:flex-col items-start md:items-center gap-6 md:gap-2">
+                                <div className="relative z-10">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground ring-8 ring-background">
+                                        <step.icon className="h-6 w-6" />
+                                    </div>
+                                </div>
+                                <div className="pt-2 md:pt-0 md:text-center">
+                                    <h4 className="font-semibold">{step.title}</h4>
+                                    <p className="text-sm text-muted-foreground">{step.description}</p>
                                 </div>
                             </div>
-                            <div className="pt-2">
-                                <h4 className="font-semibold">{step.title}</h4>
-                                <p className="text-sm text-muted-foreground">{step.description}</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </CardContent>
         </Card>

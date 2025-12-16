@@ -1,5 +1,5 @@
 
-'use client';
+"use client";
 
 import {
     AlertDialog,
@@ -9,6 +9,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
     AlertDialogCancel,
+    AlertDialogFooter,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -119,12 +120,11 @@ export default function MedicalTourismPage() {
     };
 
     const handleConfirmPickup = () => {
-        if (tempPickupDateTime) {
-            setPickupDateTime(tempPickupDateTime);
+        if (pickupDateTime) {
             setPickupDialogOpen(false);
             toast({
                 title: "Pickup Scheduled",
-                description: `Your pickup is confirmed for ${tempPickupDateTime.format("MMM D, YYYY 'at' h:mm A")}.`
+                description: `Your pickup is confirmed for ${pickupDateTime.format("MMM D, YYYY 'at' h:mm A")}.`
             })
         }
     };
@@ -135,7 +135,7 @@ export default function MedicalTourismPage() {
             title: 'Pickup from Home',
             description: pickupDateTime ? `Scheduled for ${pickupDateTime.format("MMM D, h:mm A")}` : 'Not yet scheduled',
             action: (
-                <AlertDialog open={pickupDialogOpen} onOpenChange={setPickupDialogOpen}>
+                 <AlertDialog open={pickupDialogOpen} onOpenChange={setPickupDialogOpen}>
                     <AlertDialogTrigger asChild>
                         <Button variant="outline" size="sm">{pickupDateTime ? "Reschedule" : "Schedule"}</Button>
                     </AlertDialogTrigger>
@@ -149,8 +149,8 @@ export default function MedicalTourismPage() {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <StaticDateTimePicker
                                 orientation={isMobile ? 'portrait' : 'landscape'}
-                                value={tempPickupDateTime}
-                                onChange={(newValue) => setTempPickupDateTime(newValue)}
+                                value={pickupDateTime || dayjs()}
+                                onChange={(newValue) => setPickupDateTime(newValue)}
                                 onAccept={handleConfirmPickup}
                                 onClose={() => setPickupDialogOpen(false)}
                                 ampm={true}
@@ -329,5 +329,3 @@ export default function MedicalTourismPage() {
         </>
     );
 }
-
-    

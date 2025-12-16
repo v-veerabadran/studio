@@ -4,7 +4,7 @@
 import { Suspense, useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import type { Doctor, Hospital } from '@/lib/types';
+import { doctorData, hospitalData, type Doctor, type Hospital } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,22 +18,17 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
 
 
 function BookAppointmentPageContent() {
-    const { firestore } = useFirebase();
     const searchParams = useSearchParams();
     const router = useRouter();
     const { toast } = useToast();
     const isMobile = useIsMobile();
-
-    const doctorsCollection = useMemoFirebase(() => collection(firestore, 'doctors'), [firestore]);
-    const hospitalsCollection = useMemoFirebase(() => collection(firestore, 'hospitals'), [firestore]);
-    const { data: allDoctors, isLoading: isLoadingDoctors } = useCollection<Doctor>(doctorsCollection);
-    const { data: allHospitals, isLoading: isLoadingHospitals } = useCollection<Hospital>(hospitalsCollection);
     
+    const allDoctors = useMemo(() => Object.values(doctorData).flat(), []);
+    const allHospitals = useMemo(() => Object.values(hospitalData).flat(), []);
+
     const [hospital, setHospital] = useState<Hospital | null>(null);
     const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | undefined>();
@@ -44,44 +39,37 @@ function BookAppointmentPageContent() {
     const [visitType, setVisitType] = useState<"in-person" | "virtual">("in-person");
 
     useEffect(() => {
-        if (isLoadingDoctors || isLoadingHospitals) return;
-
         const doctorId = searchParams.get('doctorId');
         const hospitalId = searchParams.get('hospitalId');
 
-        let initialDoctors = allDoctors || [];
+        let initialDoctors = allDoctors;
 
-        if (hospitalId && allHospitals) {
+        if (hospitalId) {
             const foundHospital = allHospitals.find(h => h.id === hospitalId);
             if (foundHospital) {
                 setHospital(foundHospital);
-                if (allDoctors) {
-                    const affiliatedDoctors = allDoctors.filter(d => d.hospital === foundHospital.name);
-                    setDoctorsList(affiliatedDoctors);
-                    initialDoctors = affiliatedDoctors;
-                }
+                const affiliatedDoctors = allDoctors.filter(d => d.hospital === foundHospital.name);
+                setDoctorsList(affiliatedDoctors);
+                initialDoctors = affiliatedDoctors;
             }
         } else {
-            setDoctorsList(allDoctors || []);
+            setDoctorsList(allDoctors);
         }
         
-        if (doctorId && allDoctors) {
+        if (doctorId) {
             const foundDoctor = allDoctors.find(d => d.id === doctorId);
             if(foundDoctor) {
                 setDoctor(foundDoctor || null);
                 setSelectedDoctorId(String(foundDoctor?.id));
-                if (allHospitals) {
-                    const affiliatedHospital = allHospitals.find(h => h.name === foundDoctor.hospital);
-                    if (affiliatedHospital) {
-                        setHospital(affiliatedHospital);
-                    }
+                const affiliatedHospital = allHospitals.find(h => h.name === foundDoctor.hospital);
+                if (affiliatedHospital) {
+                    setHospital(affiliatedHospital);
                 }
             }
         }
-    }, [searchParams, allDoctors, allHospitals, isLoadingDoctors, isLoadingHospitals]);
+    }, [searchParams, allDoctors, allHospitals]);
     
     const handleDoctorChange = (doctorId: string) => {
-        if (!allDoctors) return;
         const foundDoctor = allDoctors.find(d => d.id === doctorId);
         setDoctor(foundDoctor || null);
         setSelectedDoctorId(doctorId);
@@ -106,10 +94,6 @@ function BookAppointmentPageContent() {
         }).toString();
 
         router.push(`/payment?${query}`);
-    }
-
-    if (isLoadingDoctors || isLoadingHospitals) {
-        return <div className="container py-8 text-center">Loading booking information...</div>
     }
 
     return (

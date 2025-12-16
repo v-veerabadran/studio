@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import type { Doctor } from '@/lib/types';
+import { doctorData, type Doctor } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -16,8 +16,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CreditCard, CalendarIcon, Lock, User, Building, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
 
 const paymentSchema = z.object({
   cardNumber: z.string().refine((val) => /^\d{16}$/.test(val), {
@@ -36,10 +34,8 @@ function PaymentPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { toast } = useToast();
-    const { firestore } = useFirebase();
-
-    const doctorsCollection = useMemoFirebase(() => collection(firestore, 'doctors'), [firestore]);
-    const { data: allDoctors, isLoading } = useCollection<Doctor>(doctorsCollection);
+    
+    const allDoctors = useMemo(() => Object.values(doctorData).flat(), []);
 
     const doctorId = searchParams.get('doctorId');
     const dateStr = searchParams.get('date');
@@ -71,10 +67,6 @@ function PaymentPageContent() {
             description: "Your appointment has been confirmed.",
         });
         router.push('/appointments');
-    }
-    
-    if (isLoading) {
-        return <div className="container py-8 text-center">Loading Payment Details...</div>
     }
 
     if (!doctor || !date || !time) {

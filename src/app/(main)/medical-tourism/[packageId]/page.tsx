@@ -2,7 +2,7 @@
 'use client';
 
 import { useParams, notFound, useRouter } from 'next/navigation';
-import type { Hospital, Doctor, MedicalPackage } from '@/lib/types';
+import { type Hospital, type MedicalPackage, hospitalData } from '@/lib/data';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -12,8 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { useState, useEffect, useMemo } from 'react';
 import { MedicalTourismFilter } from '@/components/medical-tourism-filter';
 import { filterConfigs } from '@/lib/filter-config';
-import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock data, to be replaced or merged with Firestore data
 const mockPackages: MedicalPackage[] = [
@@ -165,17 +164,16 @@ const mockPackages: MedicalPackage[] = [
 export default function PackageDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { firestore } = useFirebase();
 
   const packageId = params.packageId as string;
   const pkg = mockPackages.find((p) => p.id === packageId);
 
-  const hospitalsQuery = useMemoFirebase(() => {
-    if (!pkg) return null;
-    return query(collection(firestore, 'hospitals'), where('specialty', '==', pkg.specialty));
-  }, [firestore, pkg]);
+  const allHospitals = useMemo(() => {
+    if (!pkg) return [];
+    const specialtyKey = pkg.specialty.toLowerCase();
+    return hospitalData[specialtyKey] || [];
+  }, [pkg]);
 
-  const { data: allHospitals, isLoading } = useCollection<Hospital>(hospitalsQuery);
 
   const packageFilterConfig = useMemo(() => {
     if (!pkg) return undefined;
@@ -193,14 +191,15 @@ export default function PackageDetailPage() {
   }, [allHospitals, packageFilterConfig]);
   
   const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setFilteredHospitals(relevantHospitals);
+    // Simulate loading
+    setTimeout(() => {
+      setFilteredHospitals(relevantHospitals);
+      setIsLoading(false);
+    }, 500)
   }, [relevantHospitals]);
-
-  if (isLoading) {
-    return <div className="container py-8 text-center">Loading package details...</div>
-  }
 
   if (!pkg) {
     notFound();

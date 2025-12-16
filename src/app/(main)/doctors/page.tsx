@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, Suspense, useMemo } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Card,
@@ -22,45 +22,27 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { Doctor } from '@/lib/types';
+import { doctorData, type Doctor } from '@/lib/data';
 import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
-import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import { Skeleton } from '@/components/ui/skeleton';
 
 function DoctorsPageContent() {
-  const { firestore } = useFirebase();
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState<Doctor[]>([]);
   const [isComparing, setIsComparing] = useState(false);
   const [viewingDoctor, setViewingDoctor] = useState<Doctor | null>(null);
 
-  const doctorsCollection = useMemoFirebase(() => collection(firestore, 'doctors'), [firestore]);
-  const { data: allDoctors, isLoading } = useCollection<Doctor>(doctorsCollection);
-
-  const doctorData = useMemo(() => {
-    if (!allDoctors) return {};
-    return allDoctors.reduce((acc, doctor) => {
-      const specialty = doctor.specialty;
-      if (!acc[specialty.toLowerCase()]) {
-        acc[specialty.toLowerCase()] = [];
-      }
-      acc[specialty.toLowerCase()].push(doctor);
-      return acc;
-    }, {} as Record<string, Doctor[]>);
-  }, [allDoctors]);
-
   useEffect(() => {
     const doctorId = searchParams.get('view_doctor');
-    if (doctorId && allDoctors) {
+    if (doctorId) {
+      const allDoctors = Object.values(doctorData).flat();
       const doctor = allDoctors.find(d => d.id === doctorId);
       if (doctor) {
         setViewingDoctor(doctor);
       }
     }
-  }, [searchParams, allDoctors]);
+  }, [searchParams]);
 
   const handleSelect = (e: React.MouseEvent, item: Doctor) => {
     e.stopPropagation(); // Prevent card click from firing
@@ -215,23 +197,7 @@ function DoctorsPageContent() {
         {specialties.map((spec) => (
           <TabsContent key={spec.name} value={spec.name}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-              {isLoading ? (
-                [...Array(3)].map((_, i) => (
-                  <Card key={i}>
-                    <CardHeader className="items-center">
-                      <Skeleton className="h-24 w-24 rounded-full mb-4" />
-                      <Skeleton className="h-6 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                    </CardHeader>
-                    <CardContent>
-                      <Skeleton className="h-6 w-1/4 mx-auto mb-4" />
-                    </CardContent>
-                    <CardFooter>
-                      <Skeleton className="h-10 w-full" />
-                    </CardFooter>
-                  </Card>
-                ))
-              ): doctorData[spec.name.toLowerCase()]?.map((doctor) => (
+              {doctorData[spec.name.toLowerCase()]?.map((doctor) => (
                 <Card key={doctor.id} className="text-center flex flex-col">
                   <div className="flex-grow cursor-pointer" onClick={() => setViewingDoctor(doctor)}>
                     <CardHeader className="items-center">
@@ -264,7 +230,7 @@ function DoctorsPageContent() {
                 </Card>
               ))}
             </div>
-             {!isLoading && !doctorData[spec.name.toLowerCase()] && (
+             {!doctorData[spec.name.toLowerCase()] || doctorData[spec.name.toLowerCase()].length === 0 && (
               <div className="text-center py-12 text-muted-foreground">No doctors found for this specialty.</div>
             )}
           </TabsContent>

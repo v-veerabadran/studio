@@ -17,7 +17,7 @@ export const filterConfigs: { [key: string]: FilterConfig } = {
     },
     platinum: {
         priceRange: { min: 9000, max: 15000 },
-        sliderRange: { min: 5000, max: 20000 }
+        sliderRange: { min: 9000, max: 15000 }
     },
     gold: {
         priceRange: { min: 10000, max: 20000 },

@@ -19,24 +19,32 @@ export default function PackageDetailPage() {
   const packageId = params.packageId;
   const pkg = packages.find((p) => p.id.toString() === packageId);
 
-  const relevantHospitals = useMemo(() => {
-    if (!pkg) return [];
-    const specialty = pkg.hospital.specialty.toLowerCase();
-    const key = specialty as keyof typeof hospitalData;
-    if (key in hospitalData) {
-      return hospitalData[key] || [];
-    }
-    return [];
-  }, [pkg]);
-  
-  const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>(relevantHospitals);
-
   const packageFilterConfig = useMemo(() => {
     if (!pkg) return undefined;
     const configKey = pkg.title.split(' ')[0].toLowerCase();
     return filterConfigs[configKey];
   }, [pkg]);
 
+  const relevantHospitals = useMemo(() => {
+    if (!pkg) return [];
+    const specialty = pkg.hospital.specialty.toLowerCase();
+    const key = specialty as keyof typeof hospitalData;
+    let hospitalsForSpecialty: Hospital[] = [];
+    if (key in hospitalData) {
+      hospitalsForSpecialty = hospitalData[key] || [];
+    }
+
+    if (!packageFilterConfig) {
+        return hospitalsForSpecialty;
+    }
+    
+    // Pre-filter hospitals based on the package's price range
+    const { min, max } = packageFilterConfig.priceRange;
+    return hospitalsForSpecialty.filter(h => h.price >= min && h.price <= max);
+
+  }, [pkg, packageFilterConfig]);
+  
+  const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>(relevantHospitals);
 
   useEffect(() => {
     setFilteredHospitals(relevantHospitals);

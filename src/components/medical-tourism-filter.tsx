@@ -13,20 +13,23 @@ import { Filter, Star } from 'lucide-react';
 import { countries } from '@/lib/filter-data';
 import { useToast } from '@/hooks/use-toast';
 import type { Hospital } from '@/lib/data';
+import type { FilterConfig } from '@/lib/filter-config';
 
 interface MedicalTourismFilterProps {
     hospitals: Hospital[];
     onFilterChange: (filteredHospitals: Hospital[]) => void;
+    config?: FilterConfig;
 }
 
-export function MedicalTourismFilter({ hospitals, onFilterChange }: MedicalTourismFilterProps) {
+export function MedicalTourismFilter({ hospitals, onFilterChange, config }: MedicalTourismFilterProps) {
     const { toast } = useToast();
     
     const [selectedCountry, setSelectedCountry] = useState<string>('');
     const [selectedState, setSelectedState] = useState<string>('');
     const [rating, setRating] = useState('any');
-
-    const { minPrice, maxPrice } = useMemo(() => {
+    
+    // Determine the overall possible price range from all hospitals for the specialty
+    const { minPrice: overallMin, maxPrice: overallMax } = useMemo(() => {
         if (hospitals.length === 0) return { minPrice: 0, maxPrice: 100000 };
         const prices = hospitals.map(h => h.price);
         return {
@@ -34,12 +37,23 @@ export function MedicalTourismFilter({ hospitals, onFilterChange }: MedicalTouri
             maxPrice: Math.max(...prices)
         };
     }, [hospitals]);
+    
+    // Set the initial price range from the package-specific config, or fall back to overall range
+    const initialPriceRange: [number, number] = useMemo(() => [
+        config?.priceRange?.min ?? overallMin,
+        config?.priceRange?.max ?? overallMax
+    ], [config, overallMin, overallMax]);
 
-    const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
-
+    const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
+    
+    // Effect to reset the component's state when the config or initial range changes
     useEffect(() => {
-        setPriceRange([minPrice, maxPrice]);
-    }, [minPrice, maxPrice]);
+        setPriceRange(initialPriceRange);
+        setRating('any');
+        setSelectedCountry('');
+        setSelectedState('');
+    }, [initialPriceRange]);
+
 
     const handleCountryChange = (countryCode: string) => {
         setSelectedCountry(countryCode);
@@ -52,16 +66,13 @@ export function MedicalTourismFilter({ hospitals, onFilterChange }: MedicalTouri
         let filtered = hospitals;
 
         if (selectedState) {
-            // This is a mock filter as we don't have state data in our hospital objects.
-            // In a real app, you would filter by a `state` property on the hospital.
-            // For now, we just show a toast.
             toast({ title: `State filter for "${selectedState}" is for demo purposes.`});
         }
 
         if (rating !== 'any') {
             filtered = filtered.filter(h => h.rating >= parseInt(rating));
         }
-
+        
         filtered = filtered.filter(h => h.price >= priceRange[0] && h.price <= priceRange[1]);
 
         onFilterChange(filtered);
@@ -70,6 +81,10 @@ export function MedicalTourismFilter({ hospitals, onFilterChange }: MedicalTouri
             description: `Found ${filtered.length} hospitals matching your criteria.`,
         });
     }
+
+    const sliderMin = config?.sliderRange?.min ?? overallMin;
+    const sliderMax = config?.sliderRange?.max ?? overallMax;
+
 
     return (
         <AlertDialog>
@@ -117,7 +132,8 @@ export function MedicalTourismFilter({ hospitals, onFilterChange }: MedicalTouri
                         <Slider
                             id="price-range"
                             value={priceRange}
-                            min={minPrice} max={maxPrice}
+                            min={sliderMin} 
+                            max={sliderMax}
                             step={1000}
                             onValueChange={(value) => setPriceRange(value as [number, number])}
                         />
@@ -130,7 +146,7 @@ export function MedicalTourismFilter({ hospitals, onFilterChange }: MedicalTouri
                                     value={priceRange[0]}
                                     onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
                                     step={1000}
-                                    min={15000}
+                                    min={config?.priceRange?.min}
                                 />
                             </div>
                             <div className="flex-1 space-y-1">

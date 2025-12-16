@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 import { Separator } from '@/components/ui/separator';
 import { useState, useEffect, useMemo } from 'react';
 import { MedicalTourismFilter } from '@/components/medical-tourism-filter';
+import { filterConfigs } from '@/lib/filter-config';
 
 export default function PackageDetailPage() {
   const params = useParams();
@@ -29,6 +30,13 @@ export default function PackageDetailPage() {
   }, [pkg]);
   
   const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>(relevantHospitals);
+
+  const packageFilterConfig = useMemo(() => {
+    if (!pkg) return undefined;
+    const configKey = pkg.title.split(' ')[0].toLowerCase();
+    return filterConfigs[configKey];
+  }, [pkg]);
+
 
   useEffect(() => {
     setFilteredHospitals(relevantHospitals);
@@ -109,6 +117,7 @@ export default function PackageDetailPage() {
             <MedicalTourismFilter
                 hospitals={relevantHospitals}
                 onFilterChange={setFilteredHospitals}
+                config={packageFilterConfig}
             />
         </div>
 

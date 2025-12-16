@@ -16,7 +16,7 @@ import { Building, Video, Clock } from 'lucide-react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
-import type { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 
@@ -31,7 +31,7 @@ function BookAppointmentPageContent() {
     const [selectedDoctorId, setSelectedDoctorId] = useState<string | undefined>();
     const [doctor, setDoctor] = useState<Doctor | null>(null);
     const [selectedDateTime, setSelectedDateTime] = useState<Dayjs | null>(null);
-    const [tempDateTime, setTempDateTime] = useState<Dayjs | null>(null);
+    const [tempDateTime, setTempDateTime] = useState<Dayjs | null>(dayjs());
     const [reasonForVisit, setReasonForVisit] = useState("");
     const [visitType, setVisitType] = useState<"in-person" | "virtual">("in-person");
 
@@ -168,7 +168,7 @@ function BookAppointmentPageContent() {
                                   value={tempDateTime}
                                   onChange={(newValue) => setTempDateTime(newValue)}
                                   onAccept={(newValue) => setSelectedDateTime(newValue)}
-                                  onClose={() => setTempDateTime(selectedDateTime)}
+                                  onClose={() => setTempDateTime(selectedDateTime || dayjs())}
                                   ampm={true}
                                   disablePast
                                 />

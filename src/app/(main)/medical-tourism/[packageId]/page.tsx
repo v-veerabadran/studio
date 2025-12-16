@@ -41,7 +41,7 @@ export default function PackageDetailPage() {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedState, setSelectedState] = useState<string>('');
   
-  const [priceValue, setPriceValue] = useState<number>(25000);
+  const [priceRange, setPriceRange] = useState<[number, number]>([15000, 35000]);
 
   const handleCountryChange = (countryCode: string) => {
       setSelectedCountry(countryCode);
@@ -228,28 +228,36 @@ export default function PackageDetailPage() {
                                     </Select>
                                 </div>
                             </div>
-                             <div className="space-y-4">
-                                <div className='flex justify-between items-center'>
-                                    <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
-                                    <span className="text-sm font-medium">${priceValue.toLocaleString()}</span>
-                                </div>
+                            <div className="space-y-4">
+                                <Label htmlFor="price-range" className="font-semibold">Price Range</Label>
+                                <Slider
+                                    id="price-range"
+                                    value={priceRange}
+                                    min={10000} max={50000}
+                                    step={1000}
+                                    onValueChange={(value) => setPriceRange(value as [number, number])}
+                                />
                                 <div className="flex items-center gap-4">
-                                    <Slider 
-                                        id="price-range" 
-                                        value={[priceValue]} 
-                                        min={15000} max={50000} 
-                                        step={1000}
-                                        onValueChange={(value) => setPriceValue(value[0])}
-                                    />
-                                    <Input 
-                                        type="number" 
-                                        className="w-24"
-                                        value={priceValue}
-                                        onChange={(e) => setPriceValue(Number(e.target.value))}
-                                        min={15000}
-                                        max={50000}
-                                        step={1000}
-                                    />
+                                    <div className="flex-1 space-y-1">
+                                        <Label htmlFor="min-price" className="text-xs text-muted-foreground">Min price</Label>
+                                        <Input
+                                            id="min-price"
+                                            type="number"
+                                            value={priceRange[0]}
+                                            onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
+                                            step={1000}
+                                        />
+                                    </div>
+                                    <div className="flex-1 space-y-1">
+                                         <Label htmlFor="max-price" className="text-xs text-muted-foreground">Max price</Label>
+                                        <Input
+                                            id="max-price"
+                                            type="number"
+                                            value={priceRange[1]}
+                                            onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
+                                            step={1000}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                              <div className="space-y-4">
@@ -325,5 +333,4 @@ export default function PackageDetailPage() {
         </div>
       </div>
     </>
-  );
-}
+    

@@ -14,6 +14,7 @@ import { FileText, Loader2, Printer, Home, Plane, BedDouble, HospitalIcon, Brief
 import { useState } from 'react';
 import {
     AlertDialog,
+    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,

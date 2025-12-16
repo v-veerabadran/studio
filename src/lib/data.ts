@@ -92,7 +92,7 @@ export type MedicalPackage = {
     imageUrl: string;
     imageHint: string;
     price: string;
-    highlights: string[];
+    features: string[];
     inclusions: { item: string; details: string }[];
     itinerary: { day: string; activity: string }[];
     hospital: Hospital;
@@ -102,16 +102,17 @@ export type MedicalPackage = {
 export const packages: MedicalPackage[] = [
   {
     id: 1,
-    title: 'Comprehensive Cardiac Care Package',
-    description: 'Includes advanced cardiac surgery, a private hospital room, a dedicated care coordinator, and post-operative monitoring.',
-    imageUrl: 'https://picsum.photos/seed/cardiac-care/600/400',
-    imageHint: 'heart surgery',
-    price: 'Starting from $15,000',
-    highlights: [
-      'Surgery by world-renowned cardiac surgeons',
-      'Stay at a JCI-accredited smart hospital',
-      'Personalized post-operative care plan',
-      'Includes visa assistance and local transport'
+    title: 'Diamond Package',
+    description: 'The ultimate, all-inclusive experience with unparalleled luxury and personal care in cardiac surgery.',
+    imageUrl: 'https://picsum.photos/seed/luxury-suite/600/400',
+    imageHint: 'luxury hospital suite',
+    price: '$25,000',
+    features: [
+      'VIP hospital suite',
+      'Dedicated 24/7 personal concierge',
+      'Chauffeur-driven luxury car',
+      'Gourmet dining',
+      'Exclusive wellness retreat access'
     ],
     inclusions: [
         { item: "Surgery", details: "Coronary Artery Bypass Grafting (CABG) or Valve Replacement" },
@@ -132,16 +133,16 @@ export const packages: MedicalPackage[] = [
   },
   {
     id: 2,
-    title: 'Orthopedic Joint Replacement Journey',
-    description: 'A complete package for knee or hip replacement, including surgery, physical therapy, and all travel logistics.',
-    imageUrl: 'https://picsum.photos/seed/ortho-care/600/400',
-    imageHint: 'knee joint',
-    price: 'Starting from $9,500',
-    highlights: [
-      'Minimally invasive replacement surgery',
-      'Intensive in-patient physiotherapy',
-      'Includes local transport and accommodation',
-      'High-quality, internationally-certified implants'
+    title: 'Platinum Package',
+    description: 'A premium package offering superior comfort and comprehensive orthopedic services.',
+    imageUrl: 'https://picsum.photos/seed/private-room/600/400',
+    imageHint: 'modern private hospital',
+    price: '$18,000',
+    features: [
+      'Private hospital room',
+      'Personal care coordinator',
+      'Airport & local transfers',
+      'Post-operative therapy sessions'
     ],
      inclusions: [
         { item: "Surgery", details: "Total Knee or Hip Replacement with top-tier implants" },
@@ -162,16 +163,16 @@ export const packages: MedicalPackage[] = [
   },
   {
     id: 3,
-    title: 'Wellness & Rejuvenation Retreat',
-    description: 'A holistic wellness experience combining preventive health check-ups with traditional Indian wellness therapies.',
-    imageUrl: 'https://picsum.photos/seed/wellness-care/600/400',
-    imageHint: 'yoga meditation',
-    price: 'Starting from $3,000',
-    highlights: [
-      'Comprehensive health screening',
-      'Personalized Ayurveda & Yoga sessions',
-      'Stay at a luxury wellness resort',
-      'Healthy gourmet cuisine included'
+    title: 'Gold Package',
+    description: 'Our most popular package, balancing excellent neurological care with great value.',
+    imageUrl: 'https://picsum.photos/seed/modern-clinic/600/400',
+    imageHint: 'modern clinic',
+    price: '$12,000',
+    features: [
+      'Semi-private hospital room',
+      'Shared care coordinator',
+      'Scheduled shuttle services',
+      'Standard post-operative care'
     ],
      inclusions: [
         { item: "Health Check", details: "Full-body preventive health screening and diagnostics" },
@@ -185,9 +186,67 @@ export const packages: MedicalPackage[] = [
         { day: "2-6", activity: "Daily Yoga, Ayurveda therapies, and wellness activities." },
         { day: "7", activity: "Final health review and departure planning." },
     ],
-    hospital: hospitalData.cardiology[0], // Assuming checkup at a partner hospital
-    surgeon: doctorData.cardiology[0] // Assuming consultation with a doctor
+    hospital: hospitalData.neurology[0],
+    surgeon: doctorData.neurology[0]
   },
+  {
+    id: 4,
+    title: 'Silver Package',
+    description: 'An essential care package covering all fundamental dermatology and travel needs.',
+    imageUrl: 'https://picsum.photos/seed/hospital-ward/600/400',
+    imageHint: 'clean hospital ward',
+    price: '$8,000',
+    features: [
+      'General ward accommodation',
+      'On-call support staff',
+      'Basic travel assistance',
+      'Essential medical care'
+    ],
+    inclusions: [
+        { item: "Procedure", details: "Advanced dermatological procedure as required." },
+        { item: "Hospital Stay", details: "2-day stay in a general ward." },
+        { item: "Consultation", details: "Pre and post-procedure consultations." },
+        { item: "Transport", details: "Scheduled shuttle for hospital visits." },
+        { item: "Medication", details: "Post-procedure medication kit." }
+    ],
+    itinerary: [
+        { day: "1", activity: "Arrival, consultation, and procedure." },
+        { day: "2", activity: "Post-procedure care and observation." },
+        { day: "3", activity: "Discharge and final instructions." },
+        { day: "4", activity: "Departure." }
+    ],
+    hospital: hospitalData.dermatology[0],
+    surgeon: doctorData.dermatology[0],
+  },
+   {
+    id: 5,
+    title: 'Dental Dreams Package',
+    description: 'A complete dental makeover package including cosmetic procedures and essential care.',
+    imageUrl: 'https://picsum.photos/seed/dental-clinic/600/400',
+    imageHint: 'dental clinic',
+    price: '$5,000',
+    features: [
+      'Cosmetic Dentistry (Veneers/Whitening)',
+      'Full mouth check-up & cleaning',
+      'Painless procedures with modern tech',
+      'Includes 3-star hotel stay'
+    ],
+    inclusions: [
+        { item: "Procedure", details: "Dental veneers (up to 8 teeth) and professional whitening." },
+        { item: "Accommodation", details: "5-night stay in a comfortable 3-star hotel." },
+        { item: "Consultation", details: "Comprehensive dental assessment and planning." },
+        { item: "Transport", details: "Airport transfers and transport for all dental appointments." },
+        { item: "Aftercare", details: "Follow-up check-up before departure." }
+    ],
+    itinerary: [
+        { day: "1", activity: "Arrival, consultation, and initial prep work." },
+        { day: "2-4", activity: "Main dental procedures and adjustments." },
+        { day: "5", activity: "Final fitting, polishing, and final check-up." },
+        { day: "6", activity: "Departure." }
+    ],
+    hospital: hospitalData.dentistry[0],
+    surgeon: doctorData.dentistry[0],
+  }
 ];
 
     

@@ -7,66 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Check, Plane } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const packages = [
-  {
-    id: 1,
-    name: 'Diamond Package',
-    price: '$25,000',
-    description: 'The ultimate, all-inclusive experience with unparalleled luxury and personal care.',
-    imageUrl: 'https://picsum.photos/seed/luxury-suite/600/400',
-    imageHint: 'luxury hospital suite',
-    features: [
-      'VIP hospital suite',
-      'Dedicated 24/7 personal concierge',
-      'Chauffeur-driven luxury car',
-      'Gourmet dining',
-      'Exclusive wellness retreat access'
-    ]
-  },
-  {
-    id: 2,
-    name: 'Platinum Package',
-    price: '$18,000',
-    description: 'A premium package offering superior comfort and comprehensive medical services.',
-    imageUrl: 'https://picsum.photos/seed/private-room/600/400',
-    imageHint: 'modern private hospital',
-    features: [
-      'Private hospital room',
-      'Personal care coordinator',
-      'Airport & local transfers',
-      'Post-operative therapy sessions'
-    ]
-  },
-  {
-    id: 3,
-    name: 'Gold Package',
-    price: '$12,000',
-    description: 'Our most popular package, balancing excellent care with great value.',
-    imageUrl: 'https://picsum.photos/seed/modern-clinic/600/400',
-    imageHint: 'modern clinic',
-    features: [
-      'Semi-private hospital room',
-      'Shared care coordinator',
-      'Scheduled shuttle services',
-      'Standard post-operative care'
-    ]
-  },
-  {
-    id: 4,
-    name: 'Silver Package',
-    price: '$8,000',
-    description: 'An essential care package covering all fundamental medical and travel needs.',
-    imageUrl: 'https://picsum.photos/seed/hospital-ward/600/400',
-    imageHint: 'clean hospital ward',
-    features: [
-      'General ward accommodation',
-      'On-call support staff',
-      'Basic travel assistance',
-      'Essential medical care'
-    ]
-  }
-];
+import { packages } from '@/lib/data';
 
 export default function MedicalTourismPage() {
 
@@ -87,10 +28,10 @@ export default function MedicalTourismPage() {
                     <Link key={pkg.id} href={`/medical-tourism/${pkg.id}`} className="block h-full">
                         <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-primary/50">
                             <div className="relative h-48 w-full">
-                                <Image src={pkg.imageUrl} alt={pkg.name} fill style={{objectFit:"cover"}} className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
+                                <Image src={pkg.imageUrl} alt={pkg.title} fill style={{objectFit:"cover"}} className="rounded-t-lg" data-ai-hint={pkg.imageHint} />
                             </div>
                             <CardHeader>
-                                <CardTitle className="text-2xl">{pkg.name}</CardTitle>
+                                <CardTitle className="text-2xl">{pkg.title}</CardTitle>
                                 <CardDescription className="text-2xl font-bold text-primary">{pkg.price}</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-grow space-y-4">

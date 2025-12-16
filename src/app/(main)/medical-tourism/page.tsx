@@ -12,48 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
-
-const packages = [
-  {
-    id: 1,
-    title: 'Comprehensive Cardiac Care Package',
-    description:
-      'Includes advanced cardiac surgery, a private hospital room, a dedicated care coordinator, and post-operative monitoring.',
-    imageUrl: 'https://picsum.photos/seed/cardiac-care/600/400',
-    imageHint: 'heart surgery',
-    highlights: [
-      'Surgery by world-renowned cardiac surgeons',
-      'Stay at a JCI-accredited smart hospital',
-      'Personalized post-operative care plan',
-    ],
-  },
-  {
-    id: 2,
-    title: 'Orthopedic Joint Replacement Journey',
-    description:
-      'A complete package for knee or hip replacement, including surgery, physical therapy, and all travel logistics.',
-    imageUrl: 'https://picsum.photos/seed/ortho-care/600/400',
-    imageHint: 'knee joint',
-    highlights: [
-      'Minimally invasive replacement surgery',
-      'Intensive in-patient physiotherapy',
-      'Includes local transport and accommodation',
-    ],
-  },
-  {
-    id: 3,
-    title: 'Wellness & Rejuvenation Retreat',
-    description:
-      'A holistic wellness experience combining preventive health check-ups with traditional Indian wellness therapies.',
-    imageUrl: 'https://picsum.photos/seed/wellness-care/600/400',
-    imageHint: 'yoga meditation',
-    highlights: [
-      'Comprehensive health screening',
-      'Personalized Ayurveda & Yoga sessions',
-      'Stay at a luxury wellness resort',
-    ],
-  },
-];
+import { packages } from '@/lib/data';
+import Link from 'next/link';
 
 export default function MedicalTourismPage() {
   return (
@@ -124,7 +84,9 @@ export default function MedicalTourismPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">Learn More & Inquire</Button>
+                  <Button asChild className="w-full">
+                    <Link href={`/medical-tourism/${pkg.id}`}>Learn More & Inquire</Link>
+                  </Button>
                 </CardFooter>
               </Card>
             ))}

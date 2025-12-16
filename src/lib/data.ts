@@ -1,4 +1,5 @@
 
+
 export type Hospital = {
     id: number;
     name: string;
@@ -82,3 +83,108 @@ export const doctorData = {
 
 export const allDoctors: Doctor[] = Object.values(doctorData).flat();
 export const allHospitals: Hospital[] = Object.values(hospitalData).flat();
+
+export type MedicalPackage = {
+    id: number;
+    title: string;
+    description: string;
+    imageUrl: string;
+    imageHint: string;
+    price: string;
+    highlights: string[];
+    inclusions: { item: string; details: string }[];
+    itinerary: { day: string; activity: string }[];
+    hospital: Hospital;
+    surgeon: Doctor;
+}
+
+export const packages: MedicalPackage[] = [
+  {
+    id: 1,
+    title: 'Comprehensive Cardiac Care Package',
+    description: 'Includes advanced cardiac surgery, a private hospital room, a dedicated care coordinator, and post-operative monitoring.',
+    imageUrl: 'https://picsum.photos/seed/cardiac-care/600/400',
+    imageHint: 'heart surgery',
+    price: 'Starting from $15,000',
+    highlights: [
+      'Surgery by world-renowned cardiac surgeons',
+      'Stay at a JCI-accredited smart hospital',
+      'Personalized post-operative care plan',
+      'Includes visa assistance and local transport'
+    ],
+    inclusions: [
+        { item: "Surgery", details: "Coronary Artery Bypass Grafting (CABG) or Valve Replacement" },
+        { item: "Hospital Stay", details: "7-day stay in a private, air-conditioned room" },
+        { item: "Coordinator", details: "Dedicated care coordinator available 24/7" },
+        { item: "Transport", details: "Airport pickup/drop-off and all hospital transfers" },
+        { item: "Meals", details: "All meals for the patient as per dietary plan" }
+    ],
+    itinerary: [
+        { day: "1-2", activity: "Arrival, consultation with surgeon, and pre-operative tests." },
+        { day: "3", activity: "Surgery day." },
+        { day: "4-7", activity: "Post-operative ICU and hospital room recovery." },
+        { day: "8-10", activity: "Recovery at hotel with follow-up consultation." },
+        { day: "11", activity: "Departure." },
+    ],
+    hospital: hospitalData.cardiology[0],
+    surgeon: doctorData.cardiology[0],
+  },
+  {
+    id: 2,
+    title: 'Orthopedic Joint Replacement Journey',
+    description: 'A complete package for knee or hip replacement, including surgery, physical therapy, and all travel logistics.',
+    imageUrl: 'https://picsum.photos/seed/ortho-care/600/400',
+    imageHint: 'knee joint',
+    price: 'Starting from $9,500',
+    highlights: [
+      'Minimally invasive replacement surgery',
+      'Intensive in-patient physiotherapy',
+      'Includes local transport and accommodation',
+      'High-quality, internationally-certified implants'
+    ],
+     inclusions: [
+        { item: "Surgery", details: "Total Knee or Hip Replacement with top-tier implants" },
+        { item: "Hospital Stay", details: "5-day stay in a specialized orthopedic suite" },
+        { item: "Physiotherapy", details: "10 sessions of personalized post-op physiotherapy" },
+        { item: "Transport", details: "Airport pickup/drop-off and all hospital transfers" },
+        { item: "Accommodation", details: "5-night hotel stay for post-discharge recovery" }
+    ],
+    itinerary: [
+        { day: "1", activity: "Arrival and consultation with orthopedic surgeon." },
+        { day: "2", activity: "Surgery day." },
+        { day: "3-5", activity: "In-patient recovery and start of physiotherapy." },
+        { day: "6-10", activity: "Continued physiotherapy and recovery at hotel." },
+        { day: "11", activity: "Final check-up and departure." },
+    ],
+    hospital: hospitalData.orthopedics[0],
+    surgeon: doctorData.orthopedics[0],
+  },
+  {
+    id: 3,
+    title: 'Wellness & Rejuvenation Retreat',
+    description: 'A holistic wellness experience combining preventive health check-ups with traditional Indian wellness therapies.',
+    imageUrl: 'https://picsum.photos/seed/wellness-care/600/400',
+    imageHint: 'yoga meditation',
+    price: 'Starting from $3,000',
+    highlights: [
+      'Comprehensive health screening',
+      'Personalized Ayurveda & Yoga sessions',
+      'Stay at a luxury wellness resort',
+      'Healthy gourmet cuisine included'
+    ],
+     inclusions: [
+        { item: "Health Check", details: "Full-body preventive health screening and diagnostics" },
+        { item: "Wellness Therapies", details: "Daily personalized Ayurveda and Yoga sessions" },
+        { item: "Accommodation", details: "7-night stay in a luxury wellness resort with all amenities" },
+        { item: "Meals", details: "All gourmet wellness meals and detox juices included" },
+        { item: "Activities", details: "Guided meditation, nature walks, and wellness workshops" }
+    ],
+    itinerary: [
+        { day: "1", activity: "Arrival, wellness consultation, and relaxation." },
+        { day: "2-6", activity: "Daily Yoga, Ayurveda therapies, and wellness activities." },
+        { day: "7", activity: "Final health review and departure planning." },
+    ],
+    hospital: hospitalData.cardiology[0], // Assuming checkup at a partner hospital
+    surgeon: doctorData.cardiology[0] // Assuming consultation with a doctor
+  },
+];

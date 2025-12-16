@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -125,8 +126,8 @@ export default function MedicalTourismPage() {
         }
     }
     
-    const handleConfirmPickup = (date: Dayjs | null) => {
-        if (!date) {
+    const handleConfirmPickup = () => {
+        if (!pickupDateTime) {
             toast({
                 title: "No date selected",
                 description: "Please select a date and time for your pickup.",
@@ -136,7 +137,7 @@ export default function MedicalTourismPage() {
         }
         toast({
             title: "Pickup Scheduled!",
-            description: `Your pickup is confirmed for ${date.format("MMMM D, YYYY, h:mm A")}.`
+            description: `Your pickup is confirmed for ${pickupDateTime.format("MMMM D, YYYY, h:mm A")}.`
         });
         setIsPickupDialogOpen(false);
     }

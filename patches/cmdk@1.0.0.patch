@@ -1,0 +1,14 @@
+diff --git a/node_modules/cmdk/package.json b/node_modules/cmdk/package.json
+index 548d867..e736a53 100644
+--- a/node_modules/cmdk/package.json
++++ b/node_modules/cmdk/package.json
+@@ -58,7 +58,7 @@
+     "react-dom": ">=18.0.0"
+   },
+   "peerDependencies": {
+-    "react": "^18.0.0",
+-    "react-dom": "^18.0.0"
++    "react": ">=18.0.0",
++    "react-dom": ">=18.0.0"
+   }
+ }

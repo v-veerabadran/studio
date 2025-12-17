@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,13 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail, CalendarIcon as CalendarIconLucid } from 'lucide-react';
+import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { hospitalData, mockPackages } from '@/lib/data';
-import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { countries } from '@/lib/countries';
@@ -26,7 +24,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 import type { Dayjs } from 'dayjs';
-import { Calendar } from '@/components/ui/calendar';
 
 const bookingSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
@@ -177,69 +174,50 @@ function MedicalTourismBookingForm() {
                                             </FormItem>
                                         )} />
                                      </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <FormField
-                                            control={form.control}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                                        <Controller
                                             name="dateOfBirth"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-col">
-                                                <FormLabel>Date of Birth</FormLabel>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem>
+                                                    <FormLabel>Date of Birth</FormLabel>
                                                     <FormControl>
-                                                        <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "w-full pl-3 text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                        >
-                                                        {field.value ? (
-                                                            format(field.value, "PPP")
-                                                        ) : (
-                                                            <span>Pick a date</span>
-                                                        )}
-                                                        <CalendarIconLucid className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
+                                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                            <StaticDatePicker
+                                                                className='border rounded-md'
+                                                                value={field.value ? (field.value as unknown as Dayjs) : null}
+                                                                onChange={(newValue) => field.onChange(newValue ? (newValue as any).toDate() : null)}
+                                                                disableFuture
+                                                            />
+                                                        </LocalizationProvider>
                                                     </FormControl>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0" align="start">
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={field.value}
-                                                            onSelect={field.onChange}
-                                                            disabled={(date) =>
-                                                                date > new Date() || date < new Date("1900-01-01")
-                                                            }
-                                                            initialFocus
-                                                        />
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <FormMessage />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
                                                 </FormItem>
                                             )}
                                         />
-                                        <FormField control={form.control} name="passportNumber" render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Passport Number</FormLabel>
-                                                <FormControl><Input {...field} /></FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )} />
-                                        <FormField control={form.control} name="nationality" render={({ field }) => (
-                                            <FormItem className="flex flex-col">
-                                                <FormLabel>Nationality</FormLabel>
-                                                 <Combobox
-                                                    options={countryOptions}
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    placeholder="Select nationality..."
-                                                    searchPlaceholder="Search nationality..."
-                                                    noResultsText="No nationality found."
-                                                />
-                                                <FormMessage />
-                                            </FormItem>
-                                        )} />
+                                        <div className="space-y-4">
+                                            <FormField control={form.control} name="passportNumber" render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Passport Number</FormLabel>
+                                                    <FormControl><Input {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )} />
+                                            <FormField control={form.control} name="nationality" render={({ field }) => (
+                                                <FormItem className="flex flex-col">
+                                                    <FormLabel>Nationality</FormLabel>
+                                                    <Combobox
+                                                        options={countryOptions}
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        placeholder="Select nationality..."
+                                                        searchPlaceholder="Search nationality..."
+                                                        noResultsText="No nationality found."
+                                                    />
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )} />
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>

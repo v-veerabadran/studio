@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense } from 'react';
@@ -22,6 +21,8 @@ import { hospitalData, MedicalPackage, mockPackages } from '@/lib/data';
 import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
+import { countries } from '@/lib/countries';
+import { Combobox } from '@/components/ui/combobox';
 
 const bookingSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
@@ -121,6 +122,9 @@ function MedicalTourismBookingForm() {
             </div>
         )
     }
+    
+    const countryOptions = countries.map(country => ({ value: country.name, label: country.name }));
+
 
     return (
         <div className="container py-8">
@@ -188,9 +192,16 @@ function MedicalTourismBookingForm() {
                                             </FormItem>
                                         )} />
                                         <FormField control={form.control} name="nationality" render={({ field }) => (
-                                            <FormItem>
+                                            <FormItem className="flex flex-col">
                                                 <FormLabel>Nationality</FormLabel>
-                                                <FormControl><Input {...field} /></FormControl>
+                                                 <Combobox
+                                                    options={countryOptions}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    placeholder="Select nationality..."
+                                                    searchPlaceholder="Search nationality..."
+                                                    noResultsText="No nationality found."
+                                                />
                                                 <FormMessage />
                                             </FormItem>
                                         )} />

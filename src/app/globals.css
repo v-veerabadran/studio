@@ -30,12 +30,12 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    --sidebar-background: 150 40% 20%;
-    --sidebar-foreground: 48 33% 94%;
+    --sidebar-background: 150 40% 20%; /* Deep Forest Green */
+    --sidebar-foreground: 48 33% 94%; /* Cream */
     --sidebar-primary: 45 70% 50%; /* Muted Gold for active item */
     --sidebar-primary-foreground: 220 13% 12%; /* Dark text for active item */
     --sidebar-accent: 150 40% 25%; /* Darker green for hover */
-    --sidebar-accent-foreground: 48 33% 98%;
+    --sidebar-accent-foreground: 48 33% 98%; /* Cream on hover */
     --sidebar-border: 150 40% 25%;
     --sidebar-ring: 45 70% 55%;
   }

@@ -6,17 +6,21 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Download, ArrowLeft, FileType } from 'lucide-react';
+import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import { generateVisaLetter, type GenerateVisaLetterInput } from '@/ai/flows/generate-visa-letter-flow';
-import jsPDF from 'jspdf';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useUser } from '@/firebase';
 
 function VisaLetterContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { toast } = useToast();
+    const firestore = useFirestore();
+    const { user } = useUser();
     
     const [letter, setLetter] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [inputData, setInputData] = useState<GenerateVisaLetterInput | null>(null);
 
     const letterRef = useRef<HTMLDivElement>(null);
@@ -46,63 +50,46 @@ function VisaLetterContent() {
         
         setInputData(data);
         
-        const generateLetter = async () => {
+        const generateAndSaveLetter = async () => {
             setIsLoading(true);
             try {
+                // 1. Generate the letter
                 const result = await generateVisaLetter(data);
-                setLetter(result.visaLetter);
+                const generatedLetter = result.visaLetter;
+                setLetter(generatedLetter);
+                
+                // 2. Automatically save it to Firestore
+                if (user && firestore) {
+                    setIsSaving(true);
+                    const documentsRef = collection(firestore, 'users', user.uid, 'documents');
+                    await addDoc(documentsRef, {
+                        title: `Medical Visa Letter for ${data.patientName}`,
+                        content: generatedLetter,
+                        createdAt: serverTimestamp(),
+                        type: 'visa_letter'
+                    });
+                    toast({
+                        title: "Letter Saved",
+                        description: "The visa letter has been automatically saved to your Medical Records.",
+                    });
+                }
+
             } catch (error) {
-                console.error("Error generating visa letter:", error);
+                console.error("Error generating or saving visa letter:", error);
                 toast({
-                    title: "Generation Failed",
-                    description: "There was an error generating the visa letter. Please try again.",
+                    title: "Operation Failed",
+                    description: "There was an error generating or saving the visa letter.",
                     variant: "destructive"
                 });
             } finally {
                 setIsLoading(false);
+                setIsSaving(false);
             }
         };
 
-        generateLetter();
+        generateAndSaveLetter();
 
-    }, [searchParams, router, toast]);
-    
-    const handleDownloadPdf = () => {
-        if (!letterRef.current) return;
-        
-        const doc = new jsPDF();
-        
-        // Split text into lines to respect the pre-wrap style
-        const text = letterRef.current.innerText;
-        
-        doc.setFont('times', 'normal');
-        doc.setFontSize(12);
-
-        // A4 size is 210mm wide, giving some margin
-        const margin = 15;
-        const maxWidth = 210 - margin * 2;
-        const lines = doc.splitTextToSize(text, maxWidth);
-
-        doc.text(lines, margin, margin);
-        
-        doc.save(`Visa_Invitation_Letter_${inputData?.patientName.replace(/\s/g, '_')}.pdf`);
-        
-        toast({ title: 'Downloaded', description: 'The letter has been saved as a PDF file.' });
-    };
-
-    const handleDownloadTxt = () => {
-        if (!letterRef.current) return;
-        const blob = new Blob([letterRef.current.innerText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Visa_Invitation_Letter_${inputData?.patientName.replace(/\s/g, '_')}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        toast({ title: 'Downloaded', description: 'The letter has been downloaded as a text file.' });
-    };
+    }, [searchParams, router, toast, user, firestore]);
 
     return (
         <div className="container py-8">
@@ -115,7 +102,7 @@ function VisaLetterContent() {
             <Card className="max-w-4xl mx-auto">
                 <CardHeader>
                     <CardTitle>AI-Generated Medical Visa Letter</CardTitle>
-                    <CardDescription>This is the generated support letter for the visa application. Review and save it.</CardDescription>
+                    <CardDescription>This is the generated support letter for the visa application. It has been saved to your records.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -125,9 +112,16 @@ function VisaLetterContent() {
                         </div>
                     ) : (
                         <div>
-                             <div className="flex gap-2 mb-4">
-                                <Button onClick={handleDownloadPdf}><FileType className="mr-2 h-4 w-4" /> Save as PDF</Button>
-                                <Button onClick={handleDownloadTxt} variant="outline"><Download className="mr-2 h-4 w-4" /> Download .txt</Button>
+                             <div className="flex items-center justify-between mb-4 rounded-md border border-green-200 bg-green-50 p-4">
+                                <div className='flex items-center gap-2'>
+                                    <CheckCircle className="h-5 w-5 text-green-600" />
+                                    <p className="text-sm font-medium text-green-800">
+                                        {isSaving ? 'Saving document...' : 'Automatically saved to Medical Records'}
+                                    </p>
+                                </div>
+                                <Button variant="secondary" size="sm" onClick={() => router.push('/records')}>
+                                    View Documents
+                                </Button>
                             </div>
                             <div ref={letterRef} className="border p-8 rounded-lg bg-background font-serif text-sm leading-relaxed whitespace-pre-wrap">
                                 {letter}

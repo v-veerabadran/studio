@@ -39,3 +39,11 @@ export type MedicalPackage = {
     itinerary: { day: string; activity: string }[];
     specialty: string;
 }
+
+export type Document = {
+    id: string;
+    title: string;
+    content: string;
+    createdAt: string; // ISO string
+    type: 'visa_letter' | 'lab_report' | 'other';
+};

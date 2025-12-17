@@ -12,18 +12,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
+import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { hospitalData, mockPackages } from '@/lib/data';
-import { MedicalPackage } from '@/lib/types';
+import type { MedicalPackage } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { countries } from '@/lib/countries';
 import { Combobox } from '@/components/ui/combobox';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import type { Dayjs } from 'dayjs';
 
 const bookingSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
@@ -166,25 +169,40 @@ function MedicalTourismBookingForm() {
                                         )} />
                                      </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
-                                            <FormItem className="flex flex-col">
+                                        <FormField
+                                            control={form.control}
+                                            name="dateOfBirth"
+                                            render={({ field }) => (
+                                                <FormItem>
                                                 <FormLabel>Date of Birth</FormLabel>
-                                                <Popover>
+                                                <FormControl>
+                                                    <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <FormControl>
-                                                            <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                            </Button>
-                                                        </FormControl>
+                                                        <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                        >
+                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                        </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0" align="start">
-                                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus />
+                                                    <PopoverContent className="w-auto p-0">
+                                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                            <StaticDatePicker
+                                                                value={field.value}
+                                                                onChange={(newValue) => field.onChange(newValue ? (newValue as Dayjs).toDate() : null)}
+                                                                disableFuture
+                                                            />
+                                                        </LocalizationProvider>
                                                     </PopoverContent>
-                                                </Popover>
+                                                    </Popover>
+                                                </FormControl>
                                                 <FormMessage />
-                                            </FormItem>
-                                        )} />
+                                                </FormItem>
+                                            )}
+                                        />
                                         <FormField control={form.control} name="passportNumber" render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Passport Number</FormLabel>

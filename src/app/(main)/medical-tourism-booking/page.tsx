@@ -233,7 +233,7 @@ function MedicalTourismBookingForm() {
                                                 </FormItem>
                                             )} />
                                             <FormField control={form.control} name="nationality" render={({ field }) => (
-                                                <FormItem className="flex flex-col">
+                                                <FormItem>
                                                     <FormLabel>Nationality</FormLabel>
                                                     <Combobox
                                                         options={countryOptions}

@@ -42,9 +42,9 @@ const generateVisaLetterFlow = ai.defineFlow(
             output: { schema: GenerateVisaLetterOutputSchema },
             prompt: `You are an administrative assistant at a world-class hospital in India. Your task is to draft a formal and professional medical visa invitation letter for an international patient.
 
-The letter should be addressed to the respective embassy or consulate of the patient's country. It must be clear, concise, and contain all necessary information to support the patient's medical visa application.
+The letter must be formatted professionally, including a letterhead, date, recipient address, a clear subject line, and a formal closing. The tone should be authoritative yet supportive.
 
-Use the following information to draft the letter. Ensure the tone is formal and supportive. The letter must be a single block of text, with paragraphs separated by newline characters. Do not use markdown.
+Use the following information to draft the letter. The letter must be a single block of text, with paragraphs separated by newline characters. Do not use markdown.
 
 **Patient Information:**
 - Full Name: {{{patientName}}}
@@ -62,14 +62,34 @@ Use the following information to draft the letter. Ensure the tone is formal and
 - Hospital Location: {{{hospitalLocation}}}
 
 **Letter Structure:**
-1.  Start with a formal salutation (e.g., "To The Visa Officer, [Embassy/Consulate of Patient's Country]").
-2.  State the purpose of the letter clearly: to support the medical visa application for the patient.
-3.  Introduce the patient (name, passport number) and confirm they are scheduled to receive medical treatment at your hospital.
-4.  Describe the medical treatment required ({{{treatment}}}).
-5.  Mention the estimated dates of treatment and the required duration of stay in India.
-6.  Confirm that the patient has made the initial arrangements with the hospital.
-7.  State the hospital's reputation and commitment to providing the necessary medical care.
-8.  Conclude with a professional closing and provide the hospital's name and the surgeon's name as the contacts.
+1.  **Letterhead:**
+    - [Your Hospital Logo - Placeholder]
+    - {{{hospitalName}}}
+    - {{{hospitalLocation}}}
+    - Phone: [Hospital Phone Number] | Email: [Hospital Email]
+
+2.  **Date:** [Current Date]
+
+3.  **Recipient Address:**
+    - The Visa Officer
+    - Embassy/Consulate of {{{patientCountry}}}
+    - [City of Embassy]
+
+4.  **Subject Line:** "Subject: Medical Visa Invitation for Mr./Ms. {{{patientName}}}, Passport No: {{{passportNumber}}}"
+
+5.  **Body Paragraphs:**
+    - Start with a formal salutation (e.g., "Dear Visa Officer,").
+    - **Paragraph 1:** Clearly state the purpose of the letter: to certify that the patient is scheduled for medical treatment at your facility. Introduce the patient by full name and passport number.
+    - **Paragraph 2:** Detail the medical treatment required ({{{treatment}}}) and mention the attending surgeon ({{{surgeonName}}}).
+    - **Paragraph 3:** Specify the estimated start date ({{{estimatedStartDate}}}) and the total estimated duration of stay ({{{estimatedDuration}}}) required for the treatment and recovery period in India.
+    - **Paragraph 4:** Confirm that the hospital takes full responsibility for the patient's medical care during their stay and that the patient has made the necessary financial arrangements.
+    - **Paragraph 5:** Briefly state the hospital's reputation as a leading medical institution.
+
+6.  **Closing:**
+    - Conclude with a professional closing (e.g., "Sincerely,").
+    - [Signature - Placeholder]
+    - [Name of Authorized Signatory, e.g., Head of International Patients Dept.]
+    - {{{hospitalName}}}
 
 Draft the letter now.`,
         });

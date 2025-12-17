@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemoFirebase } from '@/firebase/provider';
 import { useCollection, useUser } from '@/firebase';
 import { collection, orderBy, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -18,8 +18,8 @@ export default function RecordsPage() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const documentsQuery = useMemo(() => {
-    if (!user) return null;
+  const documentsQuery = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
     return query(collection(firestore, 'users', user.uid, 'documents'), orderBy('createdAt', 'desc'));
   }, [user, firestore]);
 
@@ -73,7 +73,7 @@ export default function RecordsPage() {
                         <FileText className="h-4 w-4 text-muted-foreground" />
                         {doc.title}
                     </TableCell>
-                    <TableCell>{format(new Date(doc.createdAt), 'PPP')}</TableCell>
+                    <TableCell>{doc.createdAt ? format(new Date(doc.createdAt), 'PPP') : 'Date not available'}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="outline" size="sm" onClick={() => handleDownloadPdf(doc)}>
                         <Download className="mr-2 h-4 w-4" />

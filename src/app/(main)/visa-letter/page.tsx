@@ -6,9 +6,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, ArrowLeft } from 'lucide-react';
+import { Loader2, Download, ArrowLeft, FileType } from 'lucide-react';
 import { generateVisaLetter, type GenerateVisaLetterInput } from '@/ai/flows/generate-visa-letter-flow';
-import { useReactToPrint } from 'react-to-print';
+import jsPDF from 'jspdf';
 
 function VisaLetterContent() {
     const searchParams = useSearchParams();
@@ -66,13 +66,31 @@ function VisaLetterContent() {
         generateLetter();
 
     }, [searchParams, router, toast]);
-
-    const handlePrint = useReactToPrint({
-        content: () => letterRef.current,
-        documentTitle: `Visa_Invitation_Letter_${inputData?.patientName.replace(/\s/g, '_')}`
-    });
     
-    const handleDownload = () => {
+    const handleDownloadPdf = () => {
+        if (!letterRef.current) return;
+        
+        const doc = new jsPDF();
+        
+        // Split text into lines to respect the pre-wrap style
+        const text = letterRef.current.innerText;
+        
+        doc.setFont('times', 'normal');
+        doc.setFontSize(12);
+
+        // A4 size is 210mm wide, giving some margin
+        const margin = 15;
+        const maxWidth = 210 - margin * 2;
+        const lines = doc.splitTextToSize(text, maxWidth);
+
+        doc.text(lines, margin, margin);
+        
+        doc.save(`Visa_Invitation_Letter_${inputData?.patientName.replace(/\s/g, '_')}.pdf`);
+        
+        toast({ title: 'Downloaded', description: 'The letter has been saved as a PDF file.' });
+    };
+
+    const handleDownloadTxt = () => {
         if (!letterRef.current) return;
         const blob = new Blob([letterRef.current.innerText], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
@@ -97,7 +115,7 @@ function VisaLetterContent() {
             <Card className="max-w-4xl mx-auto">
                 <CardHeader>
                     <CardTitle>AI-Generated Medical Visa Letter</CardTitle>
-                    <CardDescription>This is the generated support letter for the visa application. Review and print it.</CardDescription>
+                    <CardDescription>This is the generated support letter for the visa application. Review and save it.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -107,9 +125,9 @@ function VisaLetterContent() {
                         </div>
                     ) : (
                         <div>
-                             <div className="flex gap-2 mb-4 print:hidden">
-                                <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print</Button>
-                                <Button onClick={handleDownload} variant="outline"><Download className="mr-2 h-4 w-4" /> Download</Button>
+                             <div className="flex gap-2 mb-4">
+                                <Button onClick={handleDownloadPdf}><FileType className="mr-2 h-4 w-4" /> Save as PDF</Button>
+                                <Button onClick={handleDownloadTxt} variant="outline"><Download className="mr-2 h-4 w-4" /> Download .txt</Button>
                             </div>
                             <div ref={letterRef} className="border p-8 rounded-lg bg-background font-serif text-sm leading-relaxed whitespace-pre-wrap">
                                 {letter}

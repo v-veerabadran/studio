@@ -7,7 +7,6 @@ import { Calendar, FileText, MessageSquare, Pill, Stethoscope, MapPin } from "lu
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { pageStyles } from "@/lib/page-styles";
 
 const upcomingAppointments = [
   {
@@ -47,7 +46,6 @@ const healthOffers = [
 
 export default function DashboardPage() {
   const { user } = useUser();
-  const styles = pageStyles.dashboard;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString + 'T00:00:00');
@@ -60,8 +58,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className={`container py-8 ${styles.backgroundColor}`}>
-       <h1 className={`text-3xl font-bold mb-2 ${styles.primaryTextColor}`}>
+    <div className="container py-8">
+       <h1 className="text-3xl font-bold mb-2">
           Welcome back, {user?.displayName?.split(" ")[0] || "User"}!
         </h1>
         <p className="text-muted-foreground mb-8">

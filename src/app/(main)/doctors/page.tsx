@@ -22,7 +22,8 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { doctorData, type Doctor } from '@/lib/data';
+import { doctorData } from '@/lib/data';
+import type { Doctor } from '@/lib/types';
 import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, Brain, PersonStanding, Bone, Smile } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';

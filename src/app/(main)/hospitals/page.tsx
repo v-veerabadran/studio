@@ -21,7 +21,8 @@ import {
   SheetDescription,
   SheetFooter
 } from '@/components/ui/sheet';
-import { hospitalData, type Hospital, doctorData, type Doctor } from '@/lib/data';
+import { hospitalData, doctorData } from '@/lib/data';
+import type { Hospital, Doctor } from '@/lib/types';
 import { HeartPulse, Wind, Filter, Star, Check, X, ThumbsUp, ThumbsDown, Brain, PersonStanding, Bone, Smile, Map } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';

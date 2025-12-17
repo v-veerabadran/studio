@@ -4,7 +4,8 @@
 import { Suspense, useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { doctorData, hospitalData, type Doctor, type Hospital } from '@/lib/data';
+import { doctorData, hospitalData } from '@/lib/data';
+import type { Doctor, Hospital } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

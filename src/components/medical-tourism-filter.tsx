@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Filter, Star } from 'lucide-react';
 import { countries } from '@/lib/filter-data';
 import { useToast } from '@/hooks/use-toast';
-import type { Hospital } from '@/lib/data';
+import type { Hospital } from '@/lib/types';
 import type { FilterConfig } from '@/lib/filter-config';
 
 interface MedicalTourismFilterProps {

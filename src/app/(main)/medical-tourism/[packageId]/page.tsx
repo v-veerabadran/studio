@@ -13,6 +13,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { MedicalTourismFilter } from '@/components/medical-tourism-filter';
 import { filterConfigs } from '@/lib/filter-config';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
 // Mock data, to be replaced or merged with Firestore data
 const mockPackages: MedicalPackage[] = [
@@ -205,6 +206,15 @@ export default function PackageDetailPage() {
     notFound();
   }
 
+  const getBookingUrl = (hospitalId: string) => {
+    const params = new URLSearchParams({
+        packageId: pkg.id,
+        packageName: pkg.title,
+        hospitalId: hospitalId,
+    });
+    return `/medical-tourism-booking?${params.toString()}`;
+  }
+
   return (
     <>
     <div className="container py-8">
@@ -307,7 +317,9 @@ export default function PackageDetailPage() {
                             </CardContent>
                             <CardFooter className="bg-muted/50 p-4 flex gap-2">
                                 <Button variant="outline" className="w-full">View Details</Button>
-                                <Button className="w-full">Book Now</Button>
+                                <Button asChild className="w-full">
+                                    <Link href={getBookingUrl(hospital.id)}>Book Now</Link>
+                                </Button>
                             </CardFooter>
                         </div>
                     </Card>

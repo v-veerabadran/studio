@@ -30,6 +30,7 @@ import {
   BookOpen,
   CreditCard,
   Plane,
+  ClipboardPen,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
@@ -189,11 +190,22 @@ export default function MainLayout({
               <SidebarMenuItem>
                 <Link href="/medical-tourism" passHref>
                   <SidebarMenuButton
-                    isActive={pathname === '/medical-tourism'}
+                    isActive={pathname.startsWith('/medical-tourism')}
                     tooltip="Medical Tourism"
                   >
                     <Plane />
                     <span>Medical Tourism</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <Link href="/medical-tourism-booking" passHref>
+                  <SidebarMenuButton
+                    isActive={pathname === '/medical-tourism-booking'}
+                    tooltip="Tourism Booking"
+                  >
+                    <ClipboardPen />
+                    <span>Tourism Booking</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

@@ -198,17 +198,6 @@ export default function MainLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-               <SidebarMenuItem>
-                <Link href="/medical-tourism-booking" passHref>
-                  <SidebarMenuButton
-                    isActive={pathname === '/medical-tourism-booking'}
-                    tooltip="Tourism Booking"
-                  >
-                    <ClipboardPen />
-                    <span>Tourism Booking</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link href="/account" passHref>
                   <SidebarMenuButton

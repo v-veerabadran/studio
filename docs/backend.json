@@ -129,31 +129,6 @@
           }
         }
       }
-    },
-    "Document": {
-      "title": "Document",
-      "type": "object",
-      "description": "Represents a user document, such as a generated letter or uploaded file.",
-      "properties": {
-        "title": {
-          "type": "string",
-          "description": "The title of the document."
-        },
-        "content": {
-          "type": "string",
-          "description": "The content of the document, typically a large string (e.g., PDF data)."
-        },
-        "createdAt": {
-          "type": "object",
-          "description": "Firestore server timestamp of when the document was created."
-        },
-        "type": {
-          "type": "string",
-          "description": "The type of document.",
-          "enum": ["visa_letter", "lab_report", "other"]
-        }
-      },
-      "required": ["title", "content", "createdAt", "type"]
     }
   },
   "auth": {
@@ -209,18 +184,6 @@
               "name": "doctorId",
               "description": "The unique identifier of the doctor."
             }
-          ]
-        }
-      },
-       {
-        "path": "/users/{userId}/documents/{documentId}",
-        "definition": {
-          "entityName": "Document",
-          "schema": { "$ref": "#/backend/entities/Document" },
-          "description": "Stores documents for a specific user. Secured via path-based ownership; only the parent user can manage their documents.",
-          "params": [
-            { "name": "userId", "description": "The unique identifier of the user." },
-            { "name": "documentId", "description": "The unique identifier of the document." }
           ]
         }
       }

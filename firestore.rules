@@ -7,13 +7,11 @@
  * Core Philosophy:
  * The security model is centered around the principle that users have complete
  * and exclusive control over their own data. All data is scoped to the
-
  * authenticated user, and no user can read, write, or even list the data of
  * any other user.
  *
  * Data Structure:
  * - /users/{userId}: A UserProfile document.
- * - /users/{userId}/documents/{documentId}: A user-owned document.
  * - /hospitals/{hospitalId}: Publicly readable hospital information.
  * - /doctors/{doctorId}: Publicly readable doctor information.
  *
@@ -90,15 +88,6 @@ service cloud.firestore {
       allow create: if isOwner(userId) && hasValidProfileDataOnCreate(userId);
       allow update: if isExistingOwner(userId) && hasValidProfileDataOnUpdate();
       allow delete: if isExistingOwner(userId);
-      
-      /**
-       * @description Controls access to a user's documents collection.
-       * A user can read, write, and list their own documents.
-       * @path /users/{userId}/documents/{documentId}
-       */
-      match /documents/{documentId} {
-        allow list, get, write: if isOwner(userId);
-      }
     }
 
     /**

@@ -32,9 +32,9 @@
 
     --sidebar-background: 150 40% 20%;
     --sidebar-foreground: 48 33% 94%;
-    --sidebar-primary: 45 70% 50%;
-    --sidebar-primary-foreground: 220 13% 12%;
-    --sidebar-accent: 150 40% 25%;
+    --sidebar-primary: 45 70% 50%; /* Muted Gold for active item */
+    --sidebar-primary-foreground: 220 13% 12%; /* Dark text for active item */
+    --sidebar-accent: 150 40% 25%; /* Darker green for hover */
     --sidebar-accent-foreground: 48 33% 98%;
     --sidebar-border: 150 40% 25%;
     --sidebar-ring: 45 70% 55%;
@@ -68,12 +68,12 @@
     
     --sidebar-background: 220 13% 18%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 158 78% 39%;
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-primary: 45 93% 61%;
+    --sidebar-primary-foreground: 220 13% 12%;
     --sidebar-accent: 220 13% 22%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217.2 32.6% 25.5%;
-    --sidebar-ring: 158 78% 44%;
+    --sidebar-ring: 45 93% 61%;
   }
 }
 

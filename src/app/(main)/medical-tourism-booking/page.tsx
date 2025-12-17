@@ -50,6 +50,7 @@ function MedicalTourismBookingForm() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [showPackage, setShowPackage] = useState(true);
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const packageId = searchParams.get('packageId');
     const hospitalId = searchParams.get('hospitalId');
@@ -183,7 +184,7 @@ function MedicalTourismBookingForm() {
                                             render={({ field }) => (
                                                 <FormItem className="flex flex-col">
                                                     <FormLabel>Date of Birth</FormLabel>
-                                                    <Popover>
+                                                    <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                                                         <PopoverTrigger asChild>
                                                             <FormControl>
                                                                 <Button
@@ -205,8 +206,10 @@ function MedicalTourismBookingForm() {
                                                         <PopoverContent className="w-auto p-0" align="start">
                                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                                 <StaticDatePicker
-                                                                    onAccept={(newValue) => field.onChange(newValue ? (newValue as any).toDate() : null)}
-                                                                    disableFuture
+                                                                    onAccept={(newValue) => {
+                                                                        field.onChange(newValue ? (newValue as any).toDate() : null)
+                                                                        setIsDatePickerOpen(false)
+                                                                    }}
                                                                     slotProps={{
                                                                         actionBar: {
                                                                             actions: ['accept', 'cancel'],

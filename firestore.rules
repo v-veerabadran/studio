@@ -93,16 +93,11 @@ service cloud.firestore {
       
       /**
        * @description Controls access to a user's documents collection.
+       * A user can read, write, and list their own documents.
        * @path /users/{userId}/documents/{documentId}
        */
       match /documents/{documentId} {
-        // Users can read and write individual documents they own.
-        allow get, write: if isOwner(userId);
-      }
-
-      // This rule is at the collection level, allowing the owner to list their own documents.
-      match /documents {
-        allow list: if isOwner(userId);
+        allow list, get, write: if isOwner(userId);
       }
     }
 

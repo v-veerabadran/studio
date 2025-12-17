@@ -22,7 +22,7 @@ import { countries } from '@/lib/countries';
 import { Combobox } from '@/components/ui/combobox';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import type { Dayjs } from 'dayjs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
@@ -205,11 +205,12 @@ function MedicalTourismBookingForm() {
                                                         </PopoverTrigger>
                                                         <PopoverContent className="w-auto p-0" align="start">
                                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                                <StaticDatePicker
+                                                                <StaticDateTimePicker
                                                                     onAccept={(newValue) => {
                                                                         field.onChange(newValue ? (newValue as any).toDate() : null)
                                                                         setIsDatePickerOpen(false)
                                                                     }}
+                                                                    onClose={() => setIsDatePickerOpen(false)}
                                                                     slotProps={{
                                                                         actionBar: {
                                                                             actions: ['accept', 'cancel'],

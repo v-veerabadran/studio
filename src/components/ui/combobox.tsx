@@ -80,3 +80,7 @@ export function Combobox({
             </CommandGroup>
           </CommandList>
         </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}

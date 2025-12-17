@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail, CalendarIcon } from 'lucide-react';
+import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail, CalendarIcon, ArrowLeft, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -43,6 +43,19 @@ const bookingSchema = z.object({
   visaAssistance: z.boolean().default(false),
 });
 
+const defaultFormValues = {
+    fullName: '',
+    email: '',
+    dateOfBirth: undefined,
+    passportNumber: '',
+    nationality: '',
+    companionName: '',
+    companionRelationship: '',
+    purposeOfVisit: '',
+    medicalIssues: '',
+    visaAssistance: false,
+}
+
 function MedicalTourismBookingForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -62,25 +75,18 @@ function MedicalTourismBookingForm() {
     const form = useForm<z.infer<typeof bookingSchema>>({
         resolver: zodResolver(bookingSchema),
         defaultValues: {
+            ...defaultFormValues,
             fullName: user?.displayName || '',
             email: user?.email || '',
-            visaAssistance: false,
         },
     });
 
     useEffect(() => {
         if (user) {
             form.reset({
+                ...defaultFormValues,
                 fullName: user.displayName || '',
                 email: user.email || '',
-                dateOfBirth: undefined,
-                passportNumber: '',
-                nationality: '',
-                companionName: '',
-                companionRelationship: '',
-                purposeOfVisit: '',
-                medicalIssues: '',
-                visaAssistance: false,
             });
         }
     }, [user, form]);
@@ -124,6 +130,18 @@ function MedicalTourismBookingForm() {
         
         setIsLoading(false);
     }
+    
+    const handleClearForm = () => {
+        form.reset({
+             ...defaultFormValues,
+            fullName: user?.displayName || '',
+            email: user?.email || '',
+        });
+        toast({
+            title: "Form Cleared",
+            description: "All fields have been reset.",
+        })
+    }
 
     if (!pkg || !hospital) {
         return (
@@ -141,6 +159,12 @@ function MedicalTourismBookingForm() {
 
     return (
         <div className="container py-8">
+             <div className="mb-6">
+                <Button variant="outline" onClick={() => router.back()}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                </Button>
+            </div>
             <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold tracking-tight text-primary flex items-center justify-center gap-3">
                     <Plane className="h-10 w-10" />
@@ -190,16 +214,16 @@ function MedicalTourismBookingForm() {
                                                                 <Button
                                                                     variant={"outline"}
                                                                     className={cn(
-                                                                        "w-full pl-3 text-left font-normal",
+                                                                        "w-full justify-start text-left font-normal",
                                                                         !field.value && "text-muted-foreground"
                                                                     )}
                                                                 >
+                                                                    <CalendarIcon className="mr-2 h-4 w-4" />
                                                                     {field.value ? (
                                                                         format(field.value, "PPP")
                                                                     ) : (
                                                                         <span>Pick a date</span>
                                                                     )}
-                                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                                                 </Button>
                                                             </FormControl>
                                                         </PopoverTrigger>
@@ -232,20 +256,22 @@ function MedicalTourismBookingForm() {
                                             </FormItem>
                                         )} />
                                     </div>
-                                    <FormField control={form.control} name="nationality" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nationality</FormLabel>
-                                            <Combobox
-                                                options={countryOptions}
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                placeholder="Select nationality..."
-                                                searchPlaceholder="Search nationality..."
-                                                noResultsText="No nationality found."
-                                            />
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
+                                    <div className="grid grid-cols-1">
+                                        <FormField control={form.control} name="nationality" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nationality</FormLabel>
+                                                <Combobox
+                                                    options={countryOptions}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    placeholder="Select nationality..."
+                                                    searchPlaceholder="Search nationality..."
+                                                    noResultsText="No nationality found."
+                                                />
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                    </div>
                                 </CardContent>
                             </Card>
 
@@ -278,7 +304,7 @@ function MedicalTourismBookingForm() {
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2"><Heart className="text-primary"/> Medical Information</CardTitle>
                                     <CardDescription>Please provide a summary of your medical needs.</CardDescription>
-                                </CardHeader>
+                                </Header>
                                 <CardContent className="space-y-4">
                                      <FormField control={form.control} name="purposeOfVisit" render={({ field }) => (
                                         <FormItem>
@@ -325,13 +351,19 @@ function MedicalTourismBookingForm() {
                                 </CardContent>
                             </Card>
                             
-                             <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
-                                {isLoading ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                    'Submit Booking Request'
-                                )}
-                            </Button>
+                             <div className="flex flex-col sm:flex-row gap-4">
+                                <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                                    {isLoading ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        'Submit Booking Request'
+                                    )}
+                                </Button>
+                                <Button type="button" variant="outline" size="lg" className="w-full" onClick={handleClearForm} disabled={isLoading}>
+                                    <XCircle className="mr-2 h-4 w-4"/>
+                                    Clear Form
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 </div>

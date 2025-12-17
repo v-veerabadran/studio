@@ -96,7 +96,8 @@ service cloud.firestore {
        * @path /users/{userId}/documents/{documentId}
        */
       match /documents/{documentId} {
-        allow get, list, write: if isOwner(userId);
+        allow get, write: if isOwner(userId);
+        allow list: if isOwner(userId);
       }
     }
 

@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail } from 'lucide-react';
+import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail, CalendarIcon as CalendarIconLucid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +50,7 @@ function MedicalTourismBookingForm() {
     const { user } = useUser();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [showPackage, setShowPackage] = useState(true);
 
     const packageId = searchParams.get('packageId');
     const hospitalId = searchParams.get('hospitalId');
@@ -84,6 +85,14 @@ function MedicalTourismBookingForm() {
         }
     }, [user, form]);
     
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowPackage(false);
+        }, 10000); // 10 seconds
+
+        return () => clearTimeout(timer); // Cleanup timer on component unmount
+    }, []);
+
     async function onSubmit(values: z.infer<typeof bookingSchema>) {
         setIsLoading(true);
         console.log("Form Submitted", values);
@@ -173,33 +182,41 @@ function MedicalTourismBookingForm() {
                                             control={form.control}
                                             name="dateOfBirth"
                                             render={({ field }) => (
-                                                <FormItem>
-                                                <FormLabel>Date of Birth</FormLabel>
-                                                <FormControl>
+                                                <FormItem className="flex flex-col">
+                                                    <FormLabel>Date of Birth</FormLabel>
                                                     <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "w-full justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                        >
-                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0">
-                                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                            <StaticDatePicker
-                                                                value={field.value}
-                                                                onChange={(newValue) => field.onChange(newValue ? (newValue as Dayjs).toDate() : null)}
-                                                                disableFuture
-                                                            />
-                                                        </LocalizationProvider>
-                                                    </PopoverContent>
+                                                        <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "w-full pl-3 text-left font-normal",
+                                                                !field.value && "text-muted-foreground"
+                                                            )}
+                                                            >
+                                                            {field.value ? (
+                                                                format(field.value, "PPP")
+                                                            ) : (
+                                                                <span>Pick a date</span>
+                                                            )}
+                                                            <CalendarIconLucid className="ml-auto h-4 w-4 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" align="start">
+                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                                <StaticDatePicker
+                                                                    value={field.value}
+                                                                    onChange={(newValue) => field.onChange(newValue ? (newValue as Dayjs).toDate() : null)}
+                                                                    onAccept={
+                                                                        (newValue) => field.onChange(newValue ? (newValue as Dayjs).toDate() : null)
+                                                                    }
+                                                                    disableFuture
+                                                                />
+                                                            </LocalizationProvider>
+                                                        </PopoverContent>
                                                     </Popover>
-                                                </FormControl>
-                                                <FormMessage />
+                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
@@ -314,6 +331,7 @@ function MedicalTourismBookingForm() {
                         </form>
                     </Form>
                 </div>
+                {showPackage && (
                 <div className="space-y-6">
                     <Card className="bg-muted/30">
                         <CardHeader>
@@ -333,6 +351,7 @@ function MedicalTourismBookingForm() {
                         </CardFooter>
                     </Card>
                 </div>
+                )}
             </div>
         </div>
     );

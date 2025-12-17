@@ -304,7 +304,7 @@ function MedicalTourismBookingForm() {
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2"><Heart className="text-primary"/> Medical Information</CardTitle>
                                     <CardDescription>Please provide a summary of your medical needs.</CardDescription>
-                                </Header>
+                                </CardHeader>
                                 <CardContent className="space-y-4">
                                      <FormField control={form.control} name="purposeOfVisit" render={({ field }) => (
                                         <FormItem>

@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail } from 'lucide-react';
+import { Loader2, Plane, User, Users, FileText, Heart, ShieldCheck, Mail, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -24,6 +24,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 import type { Dayjs } from 'dayjs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 const bookingSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
@@ -174,24 +176,47 @@ function MedicalTourismBookingForm() {
                                             </FormItem>
                                         )} />
                                      </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-                                        <Controller
-                                            name="dateOfBirth"
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                                        <FormField
                                             control={form.control}
-                                            render={({ field, fieldState }) => (
-                                                <FormItem>
+                                            name="dateOfBirth"
+                                            render={({ field }) => (
+                                                <FormItem className="flex flex-col">
                                                     <FormLabel>Date of Birth</FormLabel>
-                                                    <FormControl>
-                                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                            <StaticDatePicker
-                                                                className='border rounded-md'
-                                                                value={field.value ? (field.value as unknown as Dayjs) : null}
-                                                                onChange={(newValue) => field.onChange(newValue ? (newValue as any).toDate() : null)}
-                                                                disableFuture
-                                                            />
-                                                        </LocalizationProvider>
-                                                    </FormControl>
-                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <FormControl>
+                                                                <Button
+                                                                    variant={"outline"}
+                                                                    className={cn(
+                                                                        "w-full pl-3 text-left font-normal",
+                                                                        !field.value && "text-muted-foreground"
+                                                                    )}
+                                                                >
+                                                                    {field.value ? (
+                                                                        format(field.value, "PPP")
+                                                                    ) : (
+                                                                        <span>Pick a date</span>
+                                                                    )}
+                                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                                </Button>
+                                                            </FormControl>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto p-0" align="start">
+                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                                <StaticDatePicker
+                                                                    onAccept={(newValue) => field.onChange(newValue ? (newValue as any).toDate() : null)}
+                                                                    disableFuture
+                                                                    slotProps={{
+                                                                        actionBar: {
+                                                                            actions: ['accept', 'cancel'],
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </LocalizationProvider>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />

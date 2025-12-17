@@ -92,11 +92,16 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
       
       /**
-       * @description Controls access to a user's documents.
-       * @path /users/{userId}/documents/{documentId}
+       * @description Controls access to a user's documents collection.
+       * @path /users/{userId}/documents
        */
       match /documents/{documentId} {
+        // Users can read and write individual documents they own.
         allow get, write: if isOwner(userId);
+      }
+
+      // This rule is at the collection level, allowing the owner to list their documents.
+      match /documents {
         allow list: if isOwner(userId);
       }
     }

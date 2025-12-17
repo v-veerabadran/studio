@@ -177,7 +177,7 @@ function MedicalTourismBookingForm() {
                                             </FormItem>
                                         )} />
                                      </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <FormField
                                             control={form.control}
                                             name="dateOfBirth"
@@ -224,30 +224,28 @@ function MedicalTourismBookingForm() {
                                                 </FormItem>
                                             )}
                                         />
-                                        <div className="space-y-4">
-                                            <FormField control={form.control} name="passportNumber" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Passport Number</FormLabel>
-                                                    <FormControl><Input {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} />
-                                            <FormField control={form.control} name="nationality" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Nationality</FormLabel>
-                                                    <Combobox
-                                                        options={countryOptions}
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                        placeholder="Select nationality..."
-                                                        searchPlaceholder="Search nationality..."
-                                                        noResultsText="No nationality found."
-                                                    />
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} />
-                                        </div>
+                                        <FormField control={form.control} name="passportNumber" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Passport Number</FormLabel>
+                                                <FormControl><Input {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
                                     </div>
+                                    <FormField control={form.control} name="nationality" render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nationality</FormLabel>
+                                            <Combobox
+                                                options={countryOptions}
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                placeholder="Select nationality..."
+                                                searchPlaceholder="Search nationality..."
+                                                noResultsText="No nationality found."
+                                            />
+                                            <FormMessage />
+                                        </FormItem>
+                                    )} />
                                 </CardContent>
                             </Card>
 

@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -214,7 +215,7 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-          "group/sidebar hidden shrink-0 text-sidebar-foreground transition-[width] duration-200 ease-in-out md:flex md:flex-col",
+          "group/sidebar hidden shrink-0 bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-in-out md:flex md:flex-col",
           state === 'collapsed' ? 'w-[--sidebar-width-icon]' : 'w-[--sidebar-width]',
           side === 'left' ? 'border-r' : 'border-l',
           className
@@ -315,7 +316,7 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex h-16 shrink-0 items-center justify-between border-b px-3", className)}
+      className={cn("flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-3", className)}
       {...props}
     />
   )
@@ -469,7 +470,7 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[state=collapsed]/sidebar:!size-9 group-data-[state=collapsed]/sidebar:!p-2 [&>span]:group-data-[state=collapsed]/sidebar:hidden [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[state=collapsed]/sidebar:!size-9 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:!p-2 [&>span]:group-data-[state=collapsed]/sidebar:hidden [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -717,5 +718,7 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    
 
     
